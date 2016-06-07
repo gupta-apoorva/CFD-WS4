@@ -113,13 +113,17 @@ while (t<t_end)
             sor(omg, dx,dy,imax,jmax, P, RS, &res);
             it++; 
           }
+	if (it>=itermax-1 && res > eps){
+	printf("Not converged in %d iterations  Residual = %f \n",it, res);
+	}
+	else
+	printf("Converged in %d iterations  Residual = %f \n",it, res);
 
       calculate_uv(dt,dx, dy,imax,jmax,U,V,F,G,P);
       t = t+dt;
       n = n+1;
   }
 
-printf("%f\n ", U[imax/2][7*jmax/8]);
 
 write_vtkFile("szProblem.vtk", n, xlength, ylength, imax, jmax,dx, dy, U, V, P);
 free_matrix(U,0,imax+1,0,jmax+1);

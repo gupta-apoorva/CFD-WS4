@@ -116,13 +116,7 @@ read_parameters( "problem.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xlength
         init_matrix(RS,0,iproc+1,0,jproc+1,0);
         init_matrix(F,0,iproc+1,0,jproc+1,0);
         init_matrix(G,0,iproc+1,0,jproc+1,0);
-        double resArray[num_proc];
-        for (int i = 0; i < num_proc; ++i)
-        {
-        	resArray[i] = 100.0;
-        }
-
-
+        
         double t=0;   // initialize the time
         int n = 0;    // number of time steps
 
@@ -165,7 +159,17 @@ while (t<t_end)
       t = t+dt;
       n = n+1;
   }
-}  }
+write_vtkFile("szProblem.vtk", n, xlength, ylength, iproc, jproc,dx, dy, U, V, P,myrank);
+free_matrix(U,0,iproc+1,0,jproc+1);
+free_matrix(V,0,iproc+1,0,jproc+1);
+free_matrix(P,0,iproc+1,0,jproc+1);
+free_matrix(RS,0,iproc+1,0,jproc+1);
+free_matrix(F,0,iproc+1,0,jproc+1);
+free_matrix(G,0,iproc+1,0,jproc+1);
+} 
+
+
+
 	
 else{
 // Creating the arrays U,V and P
@@ -206,11 +210,11 @@ while (t<t_end)
             MPI_Bcast(&res, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
             it++; 
           }
-	if (it>=itermax-1 && res > eps){
+	/*if (it>=itermax-1 && res > eps){
 	printf("Not converged in %d iterations  Residual = %f \n",it, res);
 	}
 	else
-	printf("Converged in %d iterations  Residual = %f \n",it, res);
+	printf("Converged in %d iterations  Residual = %f \n",it, res);*/
 
       calculate_uv(dt,dx, dy,iproc,jproc,U,V,F,G,P);
       t = t+dt;
@@ -226,6 +230,7 @@ free_matrix(P,0,iproc+1,0,jproc+1);
 free_matrix(RS,0,iproc+1,0,jproc+1);
 free_matrix(F,0,iproc+1,0,jproc+1);
 free_matrix(G,0,iproc+1,0,jproc+1);
+Programm_Sync("Synchronizing all the processors");
 Programm_Stop("Stoping Parallel Run");
 
 

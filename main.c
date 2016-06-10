@@ -6,6 +6,7 @@
 #include "sor.h"
 #include <stdio.h>
 #include <mpi.h>
+#include "parallel.h"
 
 /**
  * The main operation reads the configuration file, initializes the scenario and
@@ -85,7 +86,6 @@ int main(int argn, char** args)
    int *rank_t;
    int basic_info[6];   // Is of size 8 because 1st 2 will save the position of the block wrt to the global system, next 2 the size of that block and last 4 will save the left,right,bottom and top neighbour 
 
-
 //setting the parameters
 read_parameters( "problem.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau,&itermax, &eps, &dt_value,&iproc,
 &jproc);
@@ -100,62 +100,27 @@ read_parameters( "problem.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xlength
   {
     init_parallel (iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, 
                    &omg_i , &omg_j, num_proc );
-  }
-	
-
-
-
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Creating the arrays U,V and P
-	U = matrix ( 0 , imax+1 , 0 , jmax+1 );
-        V = matrix ( 0 , imax+1 , 0 , jmax+1 );
-        P = matrix ( 0 , imax+1 , 0 , jmax+1 );
+    // Creating the arrays U,V and P
+	    U = matrix ( 0 , iproc+1 , 0 , jproc+1 );
+        V = matrix ( 0 , iproc+1 , 0 , jproc+1 );
+        P = matrix ( 0 , iproc+1 , 0 , jproc+1 );
         
 
 // Creating arrays for right side of pressure poissons equation (RS) and F and G
-	RS = matrix ( 0,imax+1,0,jmax+1);
-        F = matrix (0,imax+1,0,jmax+1);
-        G = matrix (0,imax+1,0,jmax+1);
+	    RS = matrix ( 0,iproc+1,0,jproc+1);
+        F = matrix (0,iproc+1,0,jproc+1);
+        G = matrix (0,iproc+1,0,jproc+1);
 
 // Initializing the arrays U,V,P,RS,F and G
-        init_uvp( UI, VI,PI,imax, jmax,U,V,P);
-        init_matrix(RS,0,imax+1,0,jmax+1,0);
-        init_matrix(F,0,imax+1,0,jmax+1,0);
-        init_matrix(G,0,imax+1,0,jmax+1,0);
+        init_uvp( UI, VI,PI,iproc, jproc,U,V,P);
+        init_matrix(RS,0,iproc+1,0,jproc+1,0);
+        init_matrix(F,0,iproc+1,0,jproc+1,0);
+        init_matrix(G,0,iproc+1,0,jproc+1,0);
+        double resArray[num_proc];
+        for (int i = 0; i < num_proc; ++i)
+        {
+        	resArray[i] = 100.0;
+        }
 
 
         double t=0;   // initialize the time
@@ -163,17 +128,32 @@ read_parameters( "problem.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xlength
 
 while (t<t_end)
   {
-      calculate_dt(Re,tau,&dt,dx,dy,imax,jmax,U,V);
-      boundaryvalues(imax, jmax, U, V,P, G, F);
-      calculate_fg(Re,GX, GY, alpha, dt, dx, dy, imax, jmax, U, V, F, G);
-      calculate_rs(dt,dx,dy, imax,jmax, F, G, RS);
+      calculate_dt(Re,tau,&dt,dx,dy,iproc,jproc,U,V);
+      boundaryvalues(iproc, jproc, U, V,P, G, F);
+      calculate_fg(Re,GX, GY, alpha, dt, dx, dy, iproc, jproc, U, V, F, G);
+      calculate_rs(dt,dx,dy, iproc,jproc, F, G, RS);
       int it = 0;
       double res = 1000;
 
       while(it<itermax && res > eps) 
           {
             sor(omg, dx,dy,imax,jmax, P, RS, &res);
-            it++; 
+            double compRes = 1000.0;
+            double finalRes = 0.0; 
+            for (int i = 0; i < num_proc; ++i)
+            {
+           		MPI_Recv(&compRes, 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &status);
+           		if (compRes > finalRes)
+           		{
+           			finalRes = compRes;
+           		}
+           		
+           	}
+           	//this command sends the maximum res to all processes. To receive value same command has to be given in other processes
+           		MPI_Bcast(finalRes, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+            	res = finalRes;
+           	
+           		it++;   //we do not net to check iteration number all the processors will have same iteration number
           }
 	if (it>=itermax-1 && res > eps){
 	printf("Not converged in %d iterations  Residual = %f \n",it, res);
@@ -185,15 +165,68 @@ while (t<t_end)
       t = t+dt;
       n = n+1;
   }
+}  }
+	
+else{
+// Creating the arrays U,V and P
+	    U = matrix ( 0 , iproc+1 , 0 , jproc+1 );
+        V = matrix ( 0 , iproc+1 , 0 , jproc+1 );
+        P = matrix ( 0 , iproc+1 , 0 , jproc+1 );
+        
+
+// Creating arrays for right side of pressure poissons equation (RS) and F and G
+	    RS = matrix ( 0,iproc+1,0,jproc+1);
+        F = matrix (0,iproc+1,0,jproc+1);
+        G = matrix (0,iproc+1,0,jproc+1);
+
+// Initializing the arrays U,V,P,RS,F and G
+        init_uvp( UI, VI,PI,iproc, jproc,U,V,P);
+        init_matrix(RS,0,iproc+1,0,jproc+1,0);
+        init_matrix(F,0,iproc+1,0,jproc+1,0);
+        init_matrix(G,0,iproc+1,0,jproc+1,0);
 
 
-write_vtkFile("szProblem.vtk", n, xlength, ylength, imax, jmax,dx, dy, U, V, P);
-free_matrix(U,0,imax+1,0,jmax+1);
-free_matrix(V,0,imax+1,0,jmax+1);
-free_matrix(P,0,imax+1,0,jmax+1);
-free_matrix(RS,0,imax+1,0,jmax+1);
-free_matrix(F,0,imax+1,0,jmax+1);
-free_matrix(G,0,imax+1,0,jmax+1);
+        double t=0;   // initialize the time
+        int n = 0;    // number of time steps
+
+while (t<t_end)
+  {
+      calculate_dt(Re,tau,&dt,dx,dy,iproc,jproc,U,V);
+      boundaryvalues(iproc, jproc, U, V,P, G, F);
+      calculate_fg(Re,GX, GY, alpha, dt, dx, dy, iproc, jproc, U, V, F, G);
+      calculate_rs(dt,dx,dy, iproc,jproc, F, G, RS);
+
+      int it = 0;
+      double res = 1000;
+
+      while(it<itermax && res > eps) 
+          {
+            sor(omg, dx,dy,imax,jmax, P, RS, &res);
+            MPI_Send(res, 1, MPI_DOUBLE, 0, myrank, MPI_COMM_WORLD);
+            MPI_Bcast(&res, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+            it++; 
+          }
+	if (it>=itermax-1 && res > eps){
+	printf("Not converged in %d iterations  Residual = %f \n",it, res);
+	}
+	else
+	printf("Converged in %d iterations  Residual = %f \n",it, res);
+
+      calculate_uv(dt,dx, dy,iproc,jproc,U,V,F,G,P);
+      t = t+dt;
+      n = n+1;
+  }
+}
+
+
+write_vtkFile("szProblem.vtk", n, xlength, ylength, iproc, jproc,dx, dy, U, V, P,myrank);
+free_matrix(U,0,iproc+1,0,jproc+1);
+free_matrix(V,0,iproc+1,0,jproc+1);
+free_matrix(P,0,iproc+1,0,jproc+1);
+free_matrix(RS,0,iproc+1,0,jproc+1);
+free_matrix(F,0,iproc+1,0,jproc+1);
+free_matrix(G,0,iproc+1,0,jproc+1);
+Programm_Stop("Stoping Parallel Run");
 
 
   return 0;

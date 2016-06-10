@@ -92,7 +92,7 @@ void boundaryvalues_u(int rank_l, int rank_r, int rank_t, int rank_b ,int il, in
 
 //Boundary values for V velocities
 
-void boundary_v_left(int rank_l, int rank_r, int rank_t, int rank_b , int il, int ir, int it,int ib,double** V)
+void boundaryvalues_v(int rank_l, int rank_r, int rank_t, int rank_b , int il, int ir, int it,int ib,double** V)
 {
 	if (rank_l == MPI_PROC_NULL )
 	{

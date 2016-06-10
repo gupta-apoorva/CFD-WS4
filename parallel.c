@@ -130,13 +130,13 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
       array_neighbours[2] = rank_b;
       array_neighbours[3] = rank_t;
 
-
-
-      MPI_Send(array_pos, 2, MPI_INT, (i+j)%num_proc , 0, MPI_COMM_WORLD);
-      MPI_Send(array_size, 4, MPI_INT, (i+j)%num_proc , 0, MPI_COMM_WORLD);
-      MPI_Send(array_neighbours, 4, MPI_INT, (i+j)%num_proc , 0, MPI_COMM_WORLD);
+      MPI_Send(array_pos, 2, MPI_INT, (i+j)%num_proc , 1, MPI_COMM_WORLD);
+      MPI_Send(array_size, 4, MPI_INT, (i+j)%num_proc , 2, MPI_COMM_WORLD);
+      MPI_Send(array_neighbours, 4, MPI_INT, (i+j)%num_proc , 3, MPI_COMM_WORLD);
 
     }
+    free(omg_i);
+    free(omg_j);
   }
 
 void pressure_comm(double **P, int il, int ir , int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t, double *bufSend, double* bufRecv, MPI_Status *status, int chunk)
@@ -232,6 +232,8 @@ void pressure_comm(double **P, int il, int ir , int jb, int jt, int rank_l, int 
       }
       }
    }
+   free(bufSend);
+   free(bufRecv);
   
 }
 
@@ -414,6 +416,8 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
       }
       }
    }
+   free(bufSend);
+   free(bufRecv);
 
 }
 

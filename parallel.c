@@ -173,10 +173,6 @@ void pressure_comm(double **P, int il, int ir , int jb, int jt, int rank_l, int 
       }
       }
    }
-  else
-   {
-    void boundary_p_left(int il,int ir,int it,int ib,double** P);
-   }
 
    if (rank_r != MPI_PROC_NULL)
    {
@@ -196,10 +192,7 @@ void pressure_comm(double **P, int il, int ir , int jb, int jt, int rank_l, int 
       }
       }
    }
-   else
-   {
-    void boundary_p_right(int il,int ir,int it,int ib,double** P);
-   }
+  
 
    if (rank_t != MPI_PROC_NULL)
    {
@@ -219,10 +212,7 @@ void pressure_comm(double **P, int il, int ir , int jb, int jt, int rank_l, int 
       }
       }
    }
-   else
-   {
-    void boundary_p_top(int il,int ir,int it,int ib,double** P);
-   }
+   
 
    if (rank_b != MPI_PROC_NULL)
    {
@@ -242,10 +232,7 @@ void pressure_comm(double **P, int il, int ir , int jb, int jt, int rank_l, int 
       }
       }
    }
-   else
-   {
-    void boundary_p_bottom(int il,int ir,int it,int ib,double** P);
-   }
+  
 }
 
 
@@ -287,10 +274,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
       }
       }
    }
-  else
-   {
-    void boundary_u_left(int il,int ir,int it,int ib,double** U);
-   }
+  
 
    if (rank_r != MPI_PROC_NULL)
    {
@@ -310,10 +294,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
       }
       }
    }
-   else
-   {
-    void boundary_u_right(int il,int ir,int it,int ib,double** U);
-   }
+
 
    if (rank_t != MPI_PROC_NULL)
    {
@@ -333,10 +314,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
       }
       }
    }
-   else
-   {
-    void boundary_u_top(int il,int ir,int it,int ib,double** U);
-   }
+   
 
    if (rank_b != MPI_PROC_NULL)
    {
@@ -356,10 +334,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
       }
       }
    }
-   else
-   {
-    void boundary_u_bottom(int il,int ir,int it,int ib,double** U);
-   }
+
 
 // communicating the values of V
 
@@ -382,10 +357,6 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
       }
       }
    }
-  else
-   {
-    void boundary_v_left(int il,int ir,int it,int ib,double** V);
-   }
 
    if (rank_r != MPI_PROC_NULL)
    {
@@ -404,10 +375,6 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
           V[i][j] = bufRecv[j];
       }
       }
-   }
-   else
-   {
-    void boundary_v_right(int il,int ir,int it,int ib,double** V);
    }
 
    if (rank_t != MPI_PROC_NULL)
@@ -428,10 +395,6 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
       }
       }
    }
-   else
-   {
-    void boundary_v_top(int il,int ir,int it,int ib,double** V);
-   }
 
    if (rank_b != MPI_PROC_NULL)
    {
@@ -450,10 +413,6 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
           V[i][j] = bufRecv[i];
       }
       }
-   }
-   else
-   {
-    void boundary_v_bottom(int il,int ir,int it,int ib,double** V);
    }
 
 }

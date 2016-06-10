@@ -47,6 +47,9 @@ int read_parameters( const char *szFileName,       /* name of the file */
    READ_DOUBLE( szFileName, *GX );
    READ_DOUBLE( szFileName, *GY );
    READ_DOUBLE( szFileName, *PI );
+   READ_INT   ( szFileName, *iproc );
+   READ_INT   ( szFileName, *jproc );
+   
 
    *dx = *xlength / (double)(*imax);
    *dy = *ylength / (double)(*jmax);

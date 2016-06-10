@@ -5,7 +5,7 @@
 #include "uvp.h"
 #include "sor.h"
 #include <stdio.h>
-
+#include <mpi.h>
 
 /**
  * The main operation reads the configuration file, initializes the scenario and
@@ -41,15 +41,8 @@
  * - calculate_uv() Calculate the velocity at the next time step.
  */
 
-
-
-
 int main(int argn, char** args)
 {
-
-   double** U;
-   double** V;
-   double** P;
    double Re;               
    double UI;                
    double VI;               
@@ -69,13 +62,82 @@ int main(int argn, char** args)
    double tau;              
    int  itermax;             
    double eps;              
-   double dt_value;          
+   double dt_value;
+   int iproc;
+   int jproc;
+   double** U;
+   double** V;
+   double** P;          
    double** RS;
    double** F;
    double** G;
+   int myrank;
+   int num_proc;
+   int *omg_i;
+   int *omg_j;
+   int *il;
+   int *ir;
+   int *jb;
+   int *jt;
+   int *rank_l;
+   int *rank_r;
+   int *rank_b;
+   int *rank_t;
+   int basic_info[6];   // Is of size 8 because 1st 2 will save the position of the block wrt to the global system, next 2 the size of that block and last 4 will save the left,right,bottom and top neighbour 
+
 
 //setting the parameters
-read_parameters( "cavity100.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau,&itermax, &eps, &dt_value);
+read_parameters( "problem.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau,&itermax, &eps, &dt_value,&iproc,
+&jproc);
+
+
+// Initializing MPI
+	MPI_Init(&argn, &args);
+	MPI_Comm_size( MPI_COMM_WORLD, &num_proc ); 
+	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
+
+  if (myrank == 0)
+  {
+    init_parallel (iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, 
+                   &omg_i , &omg_j, num_proc );
+  }
+	
+
+
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Creating the arrays U,V and P
@@ -91,7 +153,7 @@ read_parameters( "cavity100.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xleng
 
 // Initializing the arrays U,V,P,RS,F and G
         init_uvp( UI, VI,PI,imax, jmax,U,V,P);
-        init_matrix(RS,0,imax+1,0,jmax+1,5);
+        init_matrix(RS,0,imax+1,0,jmax+1,0);
         init_matrix(F,0,imax+1,0,jmax+1,0);
         init_matrix(G,0,imax+1,0,jmax+1,0);
 

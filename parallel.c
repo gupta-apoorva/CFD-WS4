@@ -65,7 +65,7 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
 Program_Message("statting" );
    for (int i = 0;i < iproc ; i++)
       {
-         omg_i[i] = d1;
+         omg_i[i] = i*d1+d1;
          printf("%d\n",omg_i[i] );
          if (d2-- > 0)
             omg_i[i]++;
@@ -73,7 +73,7 @@ Program_Message("statting" );
       }
    for (int j = 0;j < jproc ; j++)
       {
-         omg_j[j] = d3;
+         omg_j[j] = j*d3+d3;
          printf("%d\n",omg_j[j] );
          if (d4-- > 0)
             omg_j[j]++;
@@ -95,6 +95,7 @@ Program_Message("statting" );
 
       else
       {
+         
          *il = omg_i[i-1] ;
       }
       

@@ -1,4 +1,5 @@
 #include "boundary_val.h"
+#include <mpi.h>
 
 // Boundary values for pressure..
 
@@ -11,42 +12,39 @@ void boundary_values(int rank_l, int rank_r, int rank_t, int rank_b ,int il, int
 
 void boundaryvalues_p(int rank_l, int rank_r, int rank_t, int rank_b ,int il, int ir, int it,int ib,double** P)
 {
+
 	if (rank_l == MPI_PROC_NULL )
 	{
-		for (int i = 0)  //left
-		{
-			for (int j = 0 ; j<=it-ib+1 ; j++)
+		int i = 0; //left
+		for (int j = 0 ; j<=it-ib+1 ; j++)
 				P[i][j] = P[i+1][j];
-		}
+		
 	}
 
 	if (rank_r == MPI_PROC_NULL )
 	{
-		for (int i = ir-il+1) // right
-		{
-			for (int j = 0 ; j<=it-ib+1 ; j++)
+		int i = ir-il+1; // right
+		for (int j = 0 ; j<=it-ib+1 ; j++)
 				P[i][j] = P[i-1][j];
-		}
+		
 	}
 
 
 	if (rank_t == MPI_PROC_NULL )
 	{
-		for (int j = it-ib+1) //top
-		{
-			for (int i = 0 ; i<=ir-il+1 ; i++)
+		int j = it-ib+1; //top
+		for (int i = 0 ; i<=ir-il+1 ; i++)
 				P[i][j] = P[i][j-1];
-		}
+
 	}
 
 
 	if (rank_b == MPI_PROC_NULL )
 	{
-		for (int j = 0)  // bottom
-		{
-			for (int i = 0 ; i<=ir-il+1 ; i++)
+		int j = 0;  // bottom
+		for (int i = 0 ; i<=ir-il+1 ; i++)
 				P[i][j] = P[i][j+1];
-		}
+
 	}
 }
 
@@ -57,42 +55,41 @@ void boundaryvalues_u(int rank_l, int rank_r, int rank_t, int rank_b ,int il, in
 {
 	if (rank_l == MPI_PROC_NULL )
 	{
-		for (int i = 1)
-		{
-			for (int j = 0 ; j<=it-ib+1 ; j++){
+		int i = 1;
+		for (int j = 0 ; j<=it-ib+1 ; j++){
 				U[i][j] = 0;
 			    U[i-1][j] =0;}
 		}
-	}
+	
 
 
 	if (rank_r == MPI_PROC_NULL )
 	{
-		for (int i = ir-il+1)
-		{
+		int i = ir-il+1;
+		
 			for (int j = 0 ; j<=it-ib+1 ; j++){
 				U[i][j] = 0;
 			    U[i+1][j] =0;}
-		}
+		
 	}
 
 	if (rank_t == MPI_PROC_NULL )
 	{
-		for (int j = it-ib+1)
-		{
+		int j = it-ib+1;
+		
 			for (int i = 0 ; i<=ir-il+2 ; i++)
 			    U[i][j] = 2.0 - U[i][j-1];
-		}
+		
 	}
 
 
 	if (rank_b == MPI_PROC_NULL )
 	{
-		for (int j = 0)
-		{
+		int j = 0;
+		
 			for (int i = 0 ; i<=ir-il+2 ; i++)
 				U[i][j] = -U[i][j+1];
-		}
+		
 	}
 }
 
@@ -103,40 +100,40 @@ void boundaryvalues_v(int rank_l, int rank_r, int rank_t, int rank_b , int il, i
 {
 	if (rank_l == MPI_PROC_NULL )
 	{
-		for (int i = 0)
-		{
+		int i = 0;
+		
 			for (int j = 0 ; j<=it-ib+2 ; j++)
 			V[i][j] = -V[i+1][j];
-		}
+		
 	}
 	
 	if (rank_r == MPI_PROC_NULL )
 	{
-		for (int i = ir-il+1)
-		{
+		int i = ir-il+1;
+		
 			for (int j = 0 ; j<=it-ib+2 ; j++)
 			V[i][j] = -V[i-1][j];
-		}
+		
 	}
 
 	if (rank_t == MPI_PROC_NULL )
 	{
-		for (int j = it-ib+1)
-		{
+		int j = it-ib+1;
+		
 			for (int i = 0 ; i<=ir-il+1 ; i++){
 			V[i][j] = 0;
 			V[i+1][j] = 0;}
-		}
+		
 	}
 
 	if (rank_b == MPI_PROC_NULL )
 	{
-		for (int j = 0)
-		{
+		int j = 0;
+		
 			for (int i = 0 ; i<=ir-il+1 ; i++){
 			V[i][j] = 0;
 			V[i+1][j] = 0;}
-		}
+		
 	}
 }
 

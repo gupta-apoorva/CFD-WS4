@@ -149,12 +149,10 @@ while (t<t_end)
             for (int i = 1; i < num_proc; ++i)
             {
            		MPI_Recv(&compRes, 1, MPI_DOUBLE, i , 20 , MPI_COMM_WORLD, &status);
-           		if (compRes > res)
-                res = compRes;         		
+                res += compRes;         		
            	}
            	//this command sends the maximum res to all processes. To receive value same command has to be given in other processes
            		MPI_Bcast(&res, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
            		it++;   //we do not need to check iteration number all the processors will have same iteration number
           }
     	if (it>=itermax-1 && res > eps){

@@ -74,16 +74,16 @@ int main(int argn, char** args)
    double** G;
    int myrank;
    int num_proc;
-   int *omg_i;
-   int *omg_j;
-   int *il;
-   int *ir;
-   int *jb;
-   int *jt;
-   int *rank_l;
-   int *rank_r;
-   int *rank_b;
-   int *rank_t;
+   int *omg_i = 0;
+   int *omg_j = 0;
+   int *il = 0;
+   int *ir = 0;
+   int *jb = 0;
+   int *jt = 0;
+   int *rank_l = 0;
+   int *rank_r = 0;
+   int *rank_b = 0;
+   int *rank_t = 0;
    MPI_Status status;
   
 //setting the parameters

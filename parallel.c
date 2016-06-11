@@ -79,7 +79,7 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
       // finding the size of each block and saving them at the correct location.
       if (i==0)
       {
-         il = 0;
+         *il = 0;
       }
       else
       {
@@ -88,7 +88,7 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
       *ir = omg_i[i];
       if (j==0)
       {
-         jb = 0;  
+         *jb = 0;  
       }
       else
       {

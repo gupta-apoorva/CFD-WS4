@@ -2,6 +2,13 @@
 
 // Boundary values for pressure..
 
+void boundary_values(int rank_l, int rank_r, int rank_t, int rank_b ,int il, int ir, int it,int ib,double** U,double** V,double** P)
+{
+	boundaryvalues_p(rank_l , rank_r , rank_t , rank_b , il , ir, it , ib , P);
+	boundaryvalues_u(rank_l , rank_r , rank_t , rank_b , il , ir, it , ib , U);
+	boundaryvalues_v( rank_l , rank_r , rank_t , rank_b , il , ir, it , ib , V);
+}
+
 void boundaryvalues_p(int rank_l, int rank_r, int rank_t, int rank_b ,int il, int ir, int it,int ib,double** P)
 {
 	if (rank_l == MPI_PROC_NULL )
@@ -46,7 +53,7 @@ void boundaryvalues_p(int rank_l, int rank_r, int rank_t, int rank_b ,int il, in
 
 //Boundary values for U velocity
 
-void boundaryvalues_u(int rank_l, int rank_r, int rank_t, int rank_b ,int il, int ir, int it,int ib,double** V)
+void boundaryvalues_u(int rank_l, int rank_r, int rank_t, int rank_b ,int il, int ir, int it,int ib,double** U)
 {
 	if (rank_l == MPI_PROC_NULL )
 	{

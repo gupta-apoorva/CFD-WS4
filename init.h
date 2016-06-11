@@ -66,7 +66,7 @@ int read_parameters(
  * The arrays U,V and P are initialized to the constant values UI, VI and PI on
  * the whole domain.
  */
-void init_uvp(
+/*void init_uvp(
   double UI,
   double VI,
   double PI,
@@ -75,7 +75,7 @@ void init_uvp(
   double **U,
   double **V,
   double **P
-);
+);*/
 
 #endif
 

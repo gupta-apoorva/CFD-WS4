@@ -105,10 +105,14 @@ if (myrank == 0)
         int* array_pos = malloc(2*sizeof(int));
         int* array_size = malloc(4*sizeof(int));
         int* array_neighbours = malloc(4*sizeof(int));
+        MPI_Recv(array_size,4,MPI_INT,0,2,MPI_COMM_WORLD,&status);
+        printf("main check\n");
+        printf("Main %d %d %d %d\n", *(array_size + 0),*(array_size + 1),*(array_size + 2),*(array_size + 3));
+        MPI_Recv(array_pos,2,MPI_INT,0,1,MPI_COMM_WORLD,&status);
+        
+        
+        MPI_Recv(array_neighbours,4,MPI_INT,0,3,MPI_COMM_WORLD,&status);
 
-        MPI_Recv(&array_pos,2,MPI_INT,0,1,MPI_COMM_WORLD,&status);
-        MPI_Recv(&array_size,4,MPI_INT,0,2,MPI_COMM_WORLD,&status);
-        MPI_Recv(&array_neighbours,4,MPI_INT,0,3,MPI_COMM_WORLD,&status);
 
 
   	    U = matrix ( array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
@@ -179,14 +183,18 @@ while (t<t_end)
 
 	
 else{
+
 // Creating the arrays U,V and P
         int* array_pos = malloc(2*sizeof(int));
         int* array_size = malloc(4*sizeof(int));
         int* array_neighbours = malloc(4*sizeof(int));
 
-        MPI_Recv(&array_pos,2,MPI_INT,0,1,MPI_COMM_WORLD,&status);
-        MPI_Recv(&array_size,4,MPI_INT,0,2,MPI_COMM_WORLD,&status);
-        MPI_Recv(&array_neighbours,4,MPI_INT,0,3,MPI_COMM_WORLD,&status);
+        
+        MPI_Recv(array_size,4,MPI_INT,0,2,MPI_COMM_WORLD,&status);
+        printf("hakaka bakaka %d %d %d %d\n", *(array_size + 0),*(array_size + 1),*(array_size + 2),*(array_size + 3));
+        printf("main slave \n");
+        MPI_Recv(array_pos,2,MPI_INT,0,1,MPI_COMM_WORLD,&status);
+        MPI_Recv(array_neighbours,4,MPI_INT,0,3,MPI_COMM_WORLD,&status);
 
 
         U = matrix ( array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );

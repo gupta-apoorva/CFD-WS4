@@ -49,10 +49,18 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
                    int *omg_i , int *omg_j, int num_proc )
 {
    
-   int* array_size = malloc(2*sizeof(int));
-   int* array_pos = malloc(4*sizeof(int));
+   //int* array_size = malloc(4*sizeof(int));
+   int* array_pos = malloc(2*sizeof(int));
    int* array_neighbours = malloc(4*sizeof(int));
+   int *array_size = NULL;
+   //int *array_pos = NULL;
+   //int *array_neighbours = NULL;
+   int array_size1[4] ;
+   //int array_pos1[2] = NULL;
+   //int *array_neighbours = NULL;
 
+   int dummy5;
+   int dummy6;
    omg_i = malloc(iproc*sizeof(int));
    omg_j = malloc(jproc*sizeof(int));
 
@@ -87,8 +95,8 @@ Program_Message("statting" );
       // finding the size of each block and saving them at the correct location.
       if (i==0)
       {
-         int dummy = 0;
-         il = &dummy;
+         dummy5 = 0;
+         il = &dummy5;
          
 
       }
@@ -103,8 +111,8 @@ Program_Message("statting" );
       
       if (j==0)
       {
-         int dummy = 0;
-         jb = &dummy;
+         dummy6 = 0;
+         jb = &dummy6;
           
       }
       else
@@ -113,66 +121,93 @@ Program_Message("statting" );
       }
       
       jt = (omg_j+j);
+      int dummy1;
+      int dummy2;
+      int dummy3;
+      int dummy4;
 
-      printf("%d %d %d %d\n",*il, *ir ,*jt, *jb );
+      printf("1st %d %d %d %d\n",*il, *ir ,*jt, *jb );
       
       // finding the neighbours of each block and saving them at relevent positions.  
       if(i == 0){
          
-        int dummy1 = MPI_PROC_NULL;
+        dummy1 = MPI_PROC_NULL;
         rank_l = &dummy1;
-        printf("%d\n",dummy1 );
+        //printf("%d\n",*rank_l );
      }
 
       else {
-         int dummy1 = jproc*(i-1)+j;
+         dummy1 = jproc*(i-1)+j;
         rank_l = &dummy1;
-        printf("%d\n",dummy1 );}
+        //printf("%d\n",*rank_l );
+     }
+
 
       if (i == iproc-1){
-         int dummy2 = MPI_PROC_NULL;
+         dummy2 = MPI_PROC_NULL;
         rank_r = &dummy2;
-      printf("%d\n",dummy2 );}
+      //printf("%d\n",*rank_r );
+     }
       else{
-         int dummy2 = jproc*(i+1)+j;
+         dummy2 = jproc*(i+1)+j;
         rank_r = &dummy2;
-      printf("%d\n",dummy2 );}
-
+      //printf("%d\n",*rank_r );
+     }
+      //printf("rank_l = %d\n",*rank_l );
       if(j == 0){
-         int dummy3 = MPI_PROC_NULL;
+        dummy3 = MPI_PROC_NULL;
         rank_b = &dummy3;
-      printf("%d\n",dummy3 );}
+      //printf("%d\n",*rank_b );
+     }
       else {
-         int dummy3 = jproc*(i)+j-1;
+         dummy3 = jproc*(i)+j-1;
         rank_b = &dummy3;
-      printf("%d\n",dummy3 );}
+      //printf("%d\n",*rank_b );
+     }
 
 
       if (j == jproc-1){
-         int dummy4 = MPI_PROC_NULL;
+         dummy4 = MPI_PROC_NULL;
         rank_t = &dummy4;
-      printf("%d\n",dummy4 );}
+      //printf("%d\n",*rank_t );
+     }
       else{
-         int dummy4 = jproc*(i)+j+1;
-        rank_t = &dummy4;printf("%d\n",dummy4 );}
+        dummy4 = jproc*(i)+j+1;
+        rank_t = &dummy4;
+        //printf("%d\n",*rank_t );
+     }
 
       printf("%d %d %d %d\n",*rank_l, *rank_r ,*rank_t, *rank_b );
 
       *(array_pos+0) = i;
       *(array_pos+1) = j;
+      printf("array_pos = %d\n", *(array_pos+0));
 
-      *(array_size+0) = *il;
+      /**(array_size+0) = *il;
       *(array_size+1) = *ir;
-      *(array_size+2) = *jb;
-      *(array_size+3) = *jt;
+      *(array_size+3) = *jb;
+      *(array_size+2) = *jt;*/
+      printf("2nd %d %d %d %d\n", *il, *ir, *jt, *jb);
+      array_size1[0] = *il;
+      array_size1[1] = *ir;
+      array_size1[3] = *jb;
+      array_size1[2] = *jt;
+      array_size = array_size1;
+
+      printf("array_size il = %d\n", array_size[0]);
+      printf("array_size ir = %d\n", array_size[1]);
+      printf("array_size jt = %d\n", array_size[2]);
+      printf("array_size jb = %d\n", array_size[3]);
 
       *(array_neighbours+0) = *rank_l;
       *(array_neighbours+1) = *rank_r;
       *(array_neighbours+2) = *rank_b;
       *(array_neighbours+3) = *rank_t;
 
-      MPI_Send(&array_pos, 2, MPI_INT, (i+j)%num_proc , 1, MPI_COMM_WORLD);
       MPI_Send(&array_size, 4, MPI_INT, (i+j)%num_proc , 2, MPI_COMM_WORLD);
+      printf("MPI_Send\n");
+      MPI_Send(&array_pos, 2, MPI_INT, (i+j)%num_proc , 1, MPI_COMM_WORLD);
+      printf("MPI_2ndsned\n");
       MPI_Send(&array_neighbours, 4, MPI_INT, (i+j)%num_proc , 3, MPI_COMM_WORLD);
 
     }

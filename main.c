@@ -98,8 +98,7 @@ read_parameters( "problem.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xlength
 
 if (myrank == 0)
 {
-    init_parallel (iproc, jproc, imax, jmax, &myrank, &il, &ir, &jb, &jt, &rank_l, &rank_r, &rank_b, &rank_t, 
-                   &omg_i , &omg_j, num_proc );
+    init_parallel (iproc, jproc, imax, jmax, &myrank, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, omg_i , omg_j, num_proc );
 // Creating the arrays U,V and P
         int* array_pos = malloc(2*sizeof(int));
         int* array_size = malloc(4*sizeof(int));
@@ -220,14 +219,11 @@ while (t<t_end)
       int it = 0;
       double res = 1000;
 
-      int it = 0;
-      double res = 1000;
-
       while(it<itermax && res > eps) 
           {
             sor(omg, dx,dy,array_size[1] - array_size[0] + 1,array_size[2] - array_size[3] +1 , P, RS, &res);
             MPI_Send(&res, 1 , MPI_DOUBLE, 0, 20 , MPI_COMM_WORLD);
-            MPI_Recv(&res, 1 , MPI_DOUBLE, 0, 20 , MPI_COMM_WORLD,&status);
+            MPI_Bcast(&res, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
             it++; 
           }
 	/*if (it>=itermax-1 && res > eps){
@@ -240,7 +236,6 @@ while (t<t_end)
       t = t+dt;
       n = n+1;
   }
-}
 
 
         write_vtkFile("szProblem.vtk", n, xlength, ylength, iproc, jproc,dx, dy, U, V, P,myrank);
@@ -254,4 +249,5 @@ while (t<t_end)
 Programm_Sync("Synchronizing all the processors");
 Programm_Stop("Stoping Parallel Run");
 return 0;
+}
 }

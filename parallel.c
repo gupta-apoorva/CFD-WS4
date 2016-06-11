@@ -96,7 +96,7 @@ Program_Message("statting" );
       else
       {
          
-         *il = omg_i[i-1] ;
+         il = (omg_i+i-1) ;
       }
       
       ir = (omg_i+i);
@@ -119,36 +119,42 @@ Program_Message("statting" );
       // finding the neighbours of each block and saving them at relevent positions.  
       if(i == 0){
          
-         int dummy = MPI_PROC_NULL;
-        rank_l = &dummy;
-        printf("rank_l = %d\n",*rank_l);
+        int dummy1 = MPI_PROC_NULL;
+        rank_l = &dummy1;
+        printf("%d\n",dummy1 );
      }
 
       else {
-         int dummy = i-1;
-        rank_l = &dummy;}
+         int dummy1 = jproc*(i-1)+j;
+        rank_l = &dummy1;
+        printf("%d\n",dummy1 );}
 
       if (i == iproc-1){
-         int dummy = MPI_PROC_NULL;
-        rank_r = &dummy;}
+         int dummy2 = MPI_PROC_NULL;
+        rank_r = &dummy2;
+      printf("%d\n",dummy2 );}
       else{
-         int dummy = i+1;
-        rank_r = &dummy;}
+         int dummy2 = jproc*(i+1)+j;
+        rank_r = &dummy2;
+      printf("%d\n",dummy2 );}
 
       if(j == 0){
-         int dummy = MPI_PROC_NULL;
-        rank_b = &dummy;}
+         int dummy3 = MPI_PROC_NULL;
+        rank_b = &dummy3;
+      printf("%d\n",dummy3 );}
       else {
-         int dummy = j-1;
-        rank_b = &dummy;}
+         int dummy3 = jproc*(i)+j-1;
+        rank_b = &dummy3;
+      printf("%d\n",dummy3 );}
 
 
       if (j == jproc-1){
-         int dummy = MPI_PROC_NULL;
-        rank_t = &dummy;}
+         int dummy4 = MPI_PROC_NULL;
+        rank_t = &dummy4;
+      printf("%d\n",dummy4 );}
       else{
-         int dummy = j+1;
-        rank_t = &dummy;}
+         int dummy4 = jproc*(i)+j+1;
+        rank_t = &dummy4;printf("%d\n",dummy4 );}
 
       printf("%d %d %d %d\n",*rank_l, *rank_r ,*rank_t, *rank_b );
 

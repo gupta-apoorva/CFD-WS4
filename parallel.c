@@ -48,9 +48,11 @@ void Programm_Stop(char *txt)
 void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *il, int *ir, int *jb, int *jt, int *rank_l, int *rank_r, int *rank_b, int *rank_t, 
                    int *omg_i , int *omg_j, int num_proc )
 {
+   Program_Message("statting" );
    int* array_size = malloc(2*sizeof(int));
    int* array_pos = malloc(4*sizeof(int));
    int* array_neighbours = malloc(4*sizeof(int));
+
    omg_i = malloc(iproc*sizeof(int));
    omg_j = malloc(jproc*sizeof(int));
 
@@ -58,6 +60,9 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
    int d2 = imax%iproc;
    int d3 = jmax/jproc;
    int d4 = jmax%jproc;
+
+   
+
    for (int i = 0;i < iproc ; i++)
       {
          omg_i[i] = d1;
@@ -79,7 +84,7 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
       // finding the size of each block and saving them at the correct location.
       if (i==0)
       {
-         *il = 0;
+         il = 0;
       }
       else
       {
@@ -88,7 +93,7 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
       *ir = omg_i[i];
       if (j==0)
       {
-         *jb = 0;  
+         jb = 0;  
       }
       else
       {

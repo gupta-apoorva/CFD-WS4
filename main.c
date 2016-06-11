@@ -74,16 +74,16 @@ int main(int argn, char** args)
    double** G;
    int myrank;
    int num_proc;
-   int *omg_i = 0;
-   int *omg_j = 0;
-   int *il = 0;
-   int *ir = 0;
-   int *jb = 0;
-   int *jt = 0;
-   int *rank_l = 0;
-   int *rank_r = 0;
-   int *rank_b = 0;
-   int *rank_t = 0;
+   int *omg_i = NULL;
+   int *omg_j = NULL;
+   int *il = NULL;
+   int *ir = NULL;
+   int *jb = NULL;
+   int *jt = NULL;
+   int *rank_l = NULL;
+   int *rank_r = NULL;
+   int *rank_b = NULL;
+   int *rank_t = NULL;
    MPI_Status status;
   
 //setting the parameters
@@ -96,9 +96,11 @@ read_parameters( "problem.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xlength
       	MPI_Comm_size( MPI_COMM_WORLD, &num_proc ); 
       	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 
+
 if (myrank == 0)
-{
-    init_parallel (iproc, jproc, imax, jmax, &myrank, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, omg_i , omg_j, num_proc );
+{  
+        
+        init_parallel (iproc, jproc, imax, jmax, &myrank, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, omg_i , omg_j, num_proc );
 // Creating the arrays U,V and P
         int* array_pos = malloc(2*sizeof(int));
         int* array_size = malloc(4*sizeof(int));

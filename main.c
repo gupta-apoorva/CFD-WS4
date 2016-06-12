@@ -22,11 +22,7 @@
  * of the whole grid is given by the second figure. All the unknowns corresond
  * to a two dimensional degree of freedom layout, so they are not stored in
  * arrays, but in a matrix.
- *
- * @image html grid.jpg
- *
- * @image html whole-grid.jpg
- *
+
  * Within the main loop the following big steps are done (for some of the 
  * operations a definition is defined already within uvp.h):
  *
@@ -239,7 +235,7 @@ while (t<t_end)
 else{
 
 // Creating the arrays U,V and P
-        int* array_pos = malloc(2*sizeof(int));
+        //int* array_pos = malloc(2*sizeof(int));
         int* array_size = malloc(4*sizeof(int));
         int* array_neighbours = malloc(4*sizeof(int));
 
@@ -249,8 +245,8 @@ else{
         printf("Neighbours %d %d %d %d\n", *(array_neighbours + 0),*(array_neighbours + 1),*(array_neighbours + 2),*(array_neighbours + 3));
         MPI_Recv(array_size,4,MPI_INT,0,3,MPI_COMM_WORLD,&status);
         printf("Size %d %d %d %d\n", *(array_size + 0),*(array_size + 1),*(array_size + 2),*(array_size + 3));
-        MPI_Recv(array_pos,2,MPI_INT,0,1,MPI_COMM_WORLD,&status);
-        printf("Position %d %d \n", *(array_pos + 0),*(array_pos + 1));
+        //MPI_Recv(array_pos,2,MPI_INT,0,1,MPI_COMM_WORLD,&status);
+        //printf("Position %d %d \n", *(array_pos + 0),*(array_pos + 1));
 
         
 

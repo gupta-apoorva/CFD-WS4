@@ -94,7 +94,7 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
 
 
       printf("1st %d %d %d %d\n",il[k], ir[k] ,jt[k], jb[k] );
-      int s[4] = {il[k], ir[k] ,jt[k], jb[k]};
+      
       
       // finding the neighbours of each block and saving them at relevent positions.  
       if(i == 0){
@@ -124,23 +124,29 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
       else{
         rank_t[k] = jproc*(i)+j+1;
       }
-      int n[4] = {rank_t[k], rank_l[k], rank_r[k], rank_b[k]};
-      int p[2] = {omg_i[i], omg_j[j]};
+      
 
       printf("%d %d %d %d\n",rank_l[k], rank_r[k] ,rank_t[k], rank_b[k] );
       k = k+1;
-      if (k<num_proc)
-      {
-         MPI_Send(n, 4, MPI_INT, k, 2, MPI_COMM_WORLD);
-         MPI_Send(s, 4, MPI_INT, k, 3, MPI_COMM_WORLD);
-         MPI_Send(p, 2, MPI_INT, k, 1, MPI_COMM_WORLD);
-      }
+
+      //MPI_Send(p, 2, MPI_INT, i, 1, MPI_COMM_WORLD);
       
     }
-              printf("hurrY.............................................................\n"); 
+ }
+    
+   for (int i = 0; i < num_proc; ++i){
+     if (i<num_proc&&i>0){
+         int n[4] = {rank_t[i], rank_l[i], rank_r[i], rank_b[i]};
+         int s[4] = {il[i], ir[i] ,jt[i], jb[i]};
+         
+         MPI_Send(n, 4, MPI_INT, i, 2, MPI_COMM_WORLD);
+         MPI_Send(s, 4, MPI_INT, i, 3, MPI_COMM_WORLD);
+         printf("\n\n\n\nLoop  %d\n\n\n\n\n", k );
+      }
+   }
   }
 
-  }
+  
 
 void pressure_comm(double **P, int il, int ir , int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t, double *bufSend, double* bufRecv, MPI_Status *status, int chunk)
 {

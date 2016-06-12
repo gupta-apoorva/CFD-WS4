@@ -126,7 +126,7 @@ if (myrank == 0){
         U = matrix (  0 , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 );
         V = matrix (  0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 );
         P = matrix (  0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 );
-        RS = matrix ( 0 , array_size[1] - array_size[0] , 0 ,array_size[2] - array_size[3]);
+        RS = matrix ( 0 , array_size[1] - array_size[0] , 0 , array_size[2] - array_size[3]);
         F = matrix (  0 , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] + array_size[3] +1 );
         G = matrix (  0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 );
 
@@ -135,8 +135,8 @@ if (myrank == 0){
         init_matrix(V , 0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 , VI);
         init_matrix(P , 0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 , PI);
         init_matrix(RS , 0 , array_size[1] - array_size[0] , 0 , array_size[2] - array_size[3] , 0);
-        init_matrix(F ,  0 , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] + array_size[3] +1 , 0);
-        init_matrix(G , 0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 , 0);
+        init_matrix(F ,  0 , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] + array_size[3] + 1 , 0);
+        init_matrix(G , 0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] + 2 , 0);
         //Program_Message("we are here \n \n \n \n");
 // initialize the time
         double t=0;
@@ -146,10 +146,13 @@ if (myrank == 0){
 
   while (t<t_end)
    {
+
         calculate_dt(Re , tau , &dt , dx , dy , array_size[1] - array_size[0] + 1, array_size[2] - array_size[3] +1 , U , V );
         boundary_values(array_neighbours[0], array_neighbours[1], array_neighbours[2], array_neighbours[3] ,array_size[0], array_size[1], array_size[2],array_size[3], U , V , P);
-        calculate_fg(Re,GX, GY, alpha, dt, dx, dy, array_size[1] - array_size[0] + 1, array_size[2] - array_size[3] +1 , U, V, F, G);
-        calculate_rs(dt,dx,dy, array_size[1] - array_size[0] + 1 , array_size[2] - array_size[3] +1 , F , G , RS);
+        calculate_fg(Re,GX, GY, alpha, dt, dx, dy, array_size[1] - array_size[0] , array_size[2] - array_size[3] , U, V, F, G);
+                Program_Message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        calculate_rs(dt,dx,dy, array_size[1] - array_size[0]  , array_size[2] - array_size[3] , F , G , RS);
+
         int it = 0;
         double res = 1000;
 
@@ -295,8 +298,9 @@ while (t<t_end)
         //calculate_dt(Re , tau , &dt , dx , dy , array_size[1] - array_size[0] + 1, array_size[2] - array_size[3] +1 , U , V );
         boundary_values(array_neighbours[0], array_neighbours[1], array_neighbours[2], array_neighbours[3] ,array_size[0], array_size[1], array_size[2],array_size[3], U , V , P);
         
-        calculate_fg(Re,GX, GY, alpha, dt, dx, dy, array_size[1] - array_size[0] + 1, array_size[2] - array_size[3] +1 , U, V, F, G);
-        calculate_rs(dt,dx,dy, array_size[1] - array_size[0] + 1 , array_size[2] - array_size[3] +1 , F , G , RS);
+        calculate_fg(Re,GX, GY, alpha, dt, dx, dy, array_size[1] - array_size[0] , array_size[2] - array_size[3]  , U, V, F, G);
+        calculate_rs(dt,dx,dy, array_size[1] - array_size[0]  , array_size[2] - array_size[3]  , F , G , RS);
+                Program_Message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         int it = 0;
         double res = 1000;
 

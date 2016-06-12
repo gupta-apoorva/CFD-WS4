@@ -2,6 +2,7 @@
 #include "helper.h"
 #include <stdlib.h>
 #include "math.h"
+#include "parallel.h"
 
 /* calculate the tine stepping based on the value of tau*/
 
@@ -103,16 +104,19 @@ void calculate_fg(double Re,double GX,double GY,double alpha,double dt,double dx
       F[i][j] = U[i][j] + dt*(1/Re*(d2udx2 + d2udy2) - du2dx - duvdy + GX);
     }
   }
-  for (int i =1;i<=imax;i++)
+ 
+  for (int i = 1 ; i <= imax ; i++)
   {
-    for (int j =1;j<=jmax-1;j++)
+    for (int j = 1; j<=jmax-1 ; j++)
     {
       d2vdx2 = (V[i+1][j]-2*V[i][j]+V[i-1][j])/(dx*dx);
       d2vdy2 = (V[i][j+1]-2*V[i][j]+V[i][j-1])/(dy*dy);
       duvdx = 1/(4*dx)*(((U[i][j]+U[i][j+1])*(V[i][j]+V[i+1][j]))-(U[i-1][j]+U[i-1][j+1])*(V[i-1][j]+V[i][j])+alpha*((abs(U[i][j]+U[i][j+1])*(V[i][j]-V[i+1][j]))-abs(U[i-1][j]+U[i-1][j+1])*(V[i-1][j]-V[i][j])));
+
       dv2dy = 1/(4*dy)*(pow(((V[i][j] + V[i][j+1])),2) - pow(((V[i][j-1] + V[i][j])),2) + alpha*(abs(V[i][j] + V[i][j+1])*(V[i][j] - V[i][j+1]) - abs(V[i][j-1] + V[i][j])*(V[i][j-1] - V[i][j])));
 
       G[i][j] = V[i][j] + dt*(1/Re*(d2vdx2 + d2vdy2) - duvdx - dv2dy + GY);
     }
    }
-  }
+        
+  }  

@@ -8,8 +8,9 @@ void boundary_values(int rank_l, int rank_r, int rank_t, int rank_b ,int il, int
 {
 	boundaryvalues_p(rank_l , rank_r , rank_t , rank_b , il , ir, jt , jb , P);
 	boundaryvalues_u(rank_l , rank_r , rank_t , rank_b , il , ir, jt , jb , U);
-Program_Message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
 	boundaryvalues_v( rank_l , rank_r , rank_t , rank_b , il , ir, jt , jb , V);
+	Program_Message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 	
 }
 
@@ -127,7 +128,7 @@ void boundaryvalues_v(int rank_l, int rank_r, int rank_t, int rank_b , int il, i
 		
 			for (int i = 0 ; i<=ir-il+1 ; i++){
 			V[i][j] = 0;
-			V[i-1][j] = 0;}
+			V[i][j+1] = 0;}
 		
 	}
 
@@ -137,7 +138,7 @@ void boundaryvalues_v(int rank_l, int rank_r, int rank_t, int rank_b , int il, i
 		
 			for (int i = 0 ; i<=ir-il+1 ; i++){
 			V[i][j] = 0;
-			V[i+1][j] = 0;}
+			V[i][j+1] = 0;}
 		
 	}
 }

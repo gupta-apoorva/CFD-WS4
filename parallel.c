@@ -45,178 +45,91 @@ void Programm_Stop(char *txt)
    exit(1);
 }
 
-void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *il, int *ir, int *jb, int *jt, int *rank_l, int *rank_r, int *rank_b, int *rank_t, 
+void* init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *il, int *ir, int *jb, int *jt, int *rank_l, int *rank_r, int *rank_b, int *rank_t, 
                    int *omg_i , int *omg_j, int num_proc )
 {
-   
-   //int* array_size = malloc(4*sizeof(int));
-   int* array_pos = malloc(2*sizeof(int));
-   int* array_neighbours = malloc(4*sizeof(int));
-   int *array_size = NULL;
-   //int *array_pos = NULL;
-   //int *array_neighbours = NULL;
-   int array_size1[4] ;
-   //int array_pos1[2] = NULL;
-   //int *array_neighbours = NULL;
-
-   int dummy5;
-   int dummy6;
-   omg_i = malloc(iproc*sizeof(int));
-   omg_j = malloc(jproc*sizeof(int));
-
    int d1 = imax/iproc;
    int d2 = imax%iproc;
    int d3 = jmax/jproc;
    int d4 = jmax%jproc;
 
-   
-Program_Message("statting" );
-   for (int i = 0;i < iproc ; i++)
-      {
+   for (int i = 0;i < iproc ; i++){
          omg_i[i] = i*d1+d1;
          printf("%d\n",omg_i[i] );
          if (d2-- > 0)
             omg_i[i]++;
-
-      }
-   for (int j = 0;j < jproc ; j++)
-      {
+       }
+   for (int j = 0;j < jproc ; j++){
          omg_j[j] = j*d3+d3;
          printf("%d\n",omg_j[j] );
          if (d4-- > 0)
             omg_j[j]++;
       }
 
-  for (int i = 0 ; i<iproc ; i++)
+  int k =0;
+  for (int i = 0 ; i < iproc ; i++)
   {
-    for (int j = 0; j < jproc; ++j)
+    for (int j = 0; j < jproc; j++)
     {
 
       // finding the size of each block and saving them at the correct location.
-      if (i==0)
-      {
-         dummy5 = 0;
-         il = &dummy5;
-         
-
+      if (i==0){
+         il[k] = 0;
       }
-
-      else
-      {
-         
-         il = (omg_i+i-1) ;
+      else{ 
+        il[k] = omg_i[i-1] ;
       }
       
-      ir = (omg_i+i);
+      ir[k] = omg_i[i];
       
-      if (j==0)
-      {
-         dummy6 = 0;
-         jb = &dummy6;
-          
+      if (j==0){
+         jb[k] = 0;      
       }
-      else
-      {
-         jb = (omg_j+j-1);
+      else{
+         jb[k] = omg_j[j-1];
       }
       
-      jt = (omg_j+j);
-      int dummy1;
-      int dummy2;
-      int dummy3;
-      int dummy4;
+      jt[k] = omg_j[j];
 
-      printf("1st %d %d %d %d\n",*il, *ir ,*jt, *jb );
+
+      printf("1st %d %d %d %d\n",il[k], ir[k] ,jt[k], jb[k] );
       
       // finding the neighbours of each block and saving them at relevent positions.  
       if(i == 0){
-         
-        dummy1 = MPI_PROC_NULL;
-        rank_l = &dummy1;
-        //printf("%d\n",*rank_l );
-     }
-
+        rank_l[k] = MPI_PROC_NULL;
+      }
       else {
-         dummy1 = jproc*(i-1)+j;
-        rank_l = &dummy1;
-        //printf("%d\n",*rank_l );
-     }
-
+        rank_l[k] = jproc*(i-1)+j;
+      }
 
       if (i == iproc-1){
-         dummy2 = MPI_PROC_NULL;
-        rank_r = &dummy2;
-      //printf("%d\n",*rank_r );
-     }
+        rank_r[k] = MPI_PROC_NULL;
+      }
       else{
-         dummy2 = jproc*(i+1)+j;
-        rank_r = &dummy2;
-      //printf("%d\n",*rank_r );
-     }
-      //printf("rank_l = %d\n",*rank_l );
-      if(j == 0){
-        dummy3 = MPI_PROC_NULL;
-        rank_b = &dummy3;
-      //printf("%d\n",*rank_b );
-     }
-      else {
-         dummy3 = jproc*(i)+j-1;
-        rank_b = &dummy3;
-      //printf("%d\n",*rank_b );
-     }
+        rank_r[k] = jproc*(i+1)+j;
+      }
 
+      if(j == 0){
+        rank_b[k] = MPI_PROC_NULL;
+      }
+      else {
+        rank_b[k] = jproc*(i)+j-1;
+      }
 
       if (j == jproc-1){
-         dummy4 = MPI_PROC_NULL;
-        rank_t = &dummy4;
-      //printf("%d\n",*rank_t );
-     }
+        rank_t[k] = MPI_PROC_NULL;
+      }
       else{
-        dummy4 = jproc*(i)+j+1;
-        rank_t = &dummy4;
-        //printf("%d\n",*rank_t );
-     }
+        rank_t[k] = jproc*(i)+j+1;
+      }
 
-      printf("%d %d %d %d\n",*rank_l, *rank_r ,*rank_t, *rank_b );
-
-      *(array_pos+0) = i;
-      *(array_pos+1) = j;
-      printf("array_pos = %d\n", *(array_pos+0));
-
-      /**(array_size+0) = *il;
-      *(array_size+1) = *ir;
-      *(array_size+3) = *jb;
-      *(array_size+2) = *jt;*/
-      printf("2nd %d %d %d %d\n", *il, *ir, *jt, *jb);
-      array_size1[0] = *il;
-      array_size1[1] = *ir;
-      array_size1[3] = *jb;
-      array_size1[2] = *jt;
-      array_size = array_size1;
-
-      printf("array_size il = %d\n", array_size[0]);
-      printf("array_size ir = %d\n", array_size[1]);
-      printf("array_size jt = %d\n", array_size[2]);
-      printf("array_size jb = %d\n", array_size[3]);
-
-      *(array_neighbours+0) = *rank_l;
-      *(array_neighbours+1) = *rank_r;
-      *(array_neighbours+2) = *rank_b;
-      *(array_neighbours+3) = *rank_t;
-
-      MPI_Send(&array_size, 4, MPI_INT, (i+j)%num_proc , 2, MPI_COMM_WORLD);
-      printf("MPI_Send\n");
-      MPI_Send(&array_pos, 2, MPI_INT, (i+j)%num_proc , 1, MPI_COMM_WORLD);
-      printf("MPI_2ndsned\n");
-      MPI_Send(&array_neighbours, 4, MPI_INT, (i+j)%num_proc , 3, MPI_COMM_WORLD);
-
+      printf("%d %d %d %d\n",rank_l[k], rank_r[k] ,rank_t[k], rank_b[k] );
+      k = k+1;
     }
+              printf("hurrY............................................................."); 
   }
-    free(omg_i);
-    free(omg_j);
-    free(array_pos);
-    free(array_size);
-    free(array_neighbours);
+
+  return NULL;
   }
 
 void pressure_comm(double **P, int il, int ir , int jb, int jt, int rank_l, int rank_r, int rank_b, int rank_t, double *bufSend, double* bufRecv, MPI_Status *status, int chunk)

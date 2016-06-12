@@ -97,87 +97,133 @@ read_parameters( "problem.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xlength
       	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 
 
-if (myrank == 0)
-{  
+if (myrank == 0){
+
+        omg_i = malloc(iproc*sizeof(int));
+        omg_j = malloc(jproc*sizeof(int));
+        il = malloc(iproc*jproc*sizeof(int));
+        ir = malloc(iproc*jproc*sizeof(int));
+        jt = malloc(iproc*jproc*sizeof(int));
+        jb = malloc(iproc*jproc*sizeof(int));
+        rank_l = malloc(iproc*jproc*sizeof(int));
+        rank_r = malloc(iproc*jproc*sizeof(int));
+        rank_t = malloc(iproc*jproc*sizeof(int));
+        rank_b = malloc(iproc*jproc*sizeof(int));
         
         init_parallel (iproc, jproc, imax, jmax, &myrank, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, omg_i , omg_j, num_proc );
-// Creating the arrays U,V and P
+
+
         int* array_pos = malloc(2*sizeof(int));
         int* array_size = malloc(4*sizeof(int));
         int* array_neighbours = malloc(4*sizeof(int));
-        MPI_Recv(array_size,4,MPI_INT,0,2,MPI_COMM_WORLD,&status);
-        printf("main check\n");
-        printf("Main %d %d %d %d\n", *(array_size + 0),*(array_size + 1),*(array_size + 2),*(array_size + 3));
-        MPI_Recv(array_pos,2,MPI_INT,0,1,MPI_COMM_WORLD,&status);
-        
-        
-        MPI_Recv(array_neighbours,4,MPI_INT,0,3,MPI_COMM_WORLD,&status);
+
+        int k=1;
+        for (int i = 0 ; i<iproc ; i++)
+        {
+            for (int j = 1; j < jproc; ++j)
+            {
+                array_pos[0] = i;
+                array_pos[1] = j;
+
+                MPI_Send(array_pos,2,MPI_INT,myrank,1,MPI_COMM_WORLD);
+
+                array_size[0] = il[k];
+                array_size[1] = ir[k];
+                array_size[2] = jt[k];
+                array_size[3] = jb[k];
+                
+                MPI_Send(array_size,4,MPI_INT,myrank,2,MPI_COMM_WORLD);
+
+                array_neighbours[0] = rank_l[k];
+                array_neighbours[1] = rank_r[k];
+                array_neighbours[2] = rank_t[k];
+                array_neighbours[3] = rank_b[k];
+
+                MPI_Send(array_neighbours,4,MPI_INT,myrank,3,MPI_COMM_WORLD);
+                k++;
+            }
+        }    
 
 
-
-  	    U = matrix ( array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
-        V = matrix ( array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 );
-        P = matrix ( array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
+// Creating the arrays U,V and P
+        U = matrix ( il[0] - 2 , ir[0] + 1 , jb[0] - 1 , jt[0]+1 );
+        V = matrix ( il[0] - 1 , ir[0] + 1 , jb[0] - 2 , jt[0]+1 );
+        P = matrix ( il[0] - 1 , ir[0] + 1 , jb[0] - 1 , jt[0]+1 );
           
 
 // Creating arrays for right side of pressure poissons equation (RS) and F and G
-	      RS = matrix ( array_size[0],array_size[1],array_size[3],array_size[2]);
-        F = matrix ( array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
-        G = matrix ( array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 );
+        RS = matrix ( il[0],ir[0],jb[0],jt[0]);
+        F = matrix ( il[0] - 2 , ir[0] + 1 , jb[0] - 1 , jt[0]+1 );
+        G = matrix ( il[0] - 1 , ir[0] + 1 , jb[0] - 2 , jt[0]+1 );
 
 // Initializing the arrays U,V,P,RS,F and G
-        init_matrix(U , array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 , UI);
-        init_matrix(V , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 , VI);
-        init_matrix(P , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 , PI);
-        init_matrix(RS , array_size[0] , array_size[1] , array_size[3] , array_size[2] , 0);
-        init_matrix(F , array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 , 0);
-        init_matrix(G , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 , 0);
+        init_matrix(U , il[0] - 2 , ir[0] + 1 , jb[0] - 1 , jt[0]+1 , UI);
+        init_matrix(V , il[0] - 1 , ir[0] + 1 , jb[0] - 2 , jt[0]+1 , VI);
+        init_matrix(P , il[0] - 1 , ir[0] + 1 , jb[0] - 1 , jt[0]+1 , PI);
+        init_matrix(RS , il[0] , ir[0] , jb[0] , jt[0] , 0);
+        init_matrix(F , il[0] - 2 , ir[0] + 1 , jb[0] - 1 , jt[0]+1 , 0);
+        init_matrix(G , il[0] - 1 , ir[0] + 1 , jb[0] - 2 , jt[0]+1 , 0);
         
 // initialize the time
         double t=0;
 // number of time steps
-        int n = 0;    
+        int n = 0;   
+
 
 while (t<t_end)
   {
-      calculate_dt(Re , tau , &dt , dx , dy , array_size[1] - array_size[0] + 1, array_size[2] - array_size[3] +1 , U , V );
-      boundary_values(array_neighbours[0], array_neighbours[1], array_neighbours[2], array_neighbours[3] ,array_size[0], array_size[1], array_size[2],array_size[3], U , V , P);
-      calculate_fg(Re,GX, GY, alpha, dt, dx, dy, array_size[1] - array_size[0] + 1, array_size[2] - array_size[3] +1 , U, V, F, G);
-      calculate_rs(dt,dx,dy, array_size[1] - array_size[0] + 1 , array_size[2] - array_size[3] +1 , F , G , RS);
+      calculate_dt(Re , tau , &dt , dx , dy , ir[0] - il[0] + 1, jt[0] - jb[0] +1 , U , V );
+      boundary_values(rank_l[0], rank_r[0], rank_t[0], rank_b[0] ,il[0], ir[0], jt[0],jb[0], U , V , P);
+      calculate_fg(Re,GX, GY, alpha, dt, dx, dy, ir[0] - il[0] + 1, jt[0] - jb[0] +1 , U, V, F, G);
+      calculate_rs(dt,dx,dy, ir[0] - il[0] + 1 , jt[0] - jb[0] +1 , F , G , RS);
       int it = 0;
       double res = 1000;
 
       while(it<itermax && res > eps) 
           {
-            sor(omg, dx,dy,array_size[1] - array_size[0] + 1,array_size[2] - array_size[3] +1 , P, RS, &res);
+            sor(omg, dx,dy,ir[0] - il[0] + 1,jt[0] - jb[0] +1 , P, RS, &res);
             int compRes;
             for (int i = 1; i < num_proc; ++i)
             {
-           		MPI_Recv(&compRes, 1, MPI_DOUBLE, i , 20 , MPI_COMM_WORLD, &status);
-                res += compRes;         		
-           	}
-           	//this command sends the maximum res to all processes. To receive value same command has to be given in other processes
-           		MPI_Bcast(&res, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-           		it++;   //we do not need to check iteration number all the processors will have same iteration number
+              MPI_Recv(&compRes, 1, MPI_DOUBLE, i , 20 , MPI_COMM_WORLD, &status);
+                res += compRes;             
+            }
+            //this command sends the maximum res to all processes. To receive value same command has to be given in other processes
+              MPI_Bcast(&res, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+              it++;   //we do not need to check iteration number all the processors will have same iteration number
           }
-    	if (it>=itermax-1 && res > eps){
-    	printf("Not converged in %d iterations  Residual = %f \n",it, res);
-    	}
-    	else
-    	printf("Converged in %d iterations  Residual = %f \n",it, res);
+      if (it>=itermax-1 && res > eps)
+      printf("Not converged in %d iterations  Residual = %f \n",it, res);
+      else
+      printf("Converged in %d iterations  Residual = %f \n",it, res);
 
-      calculate_uv( dt , dx , dy , array_size[1] - array_size[0] + 1,array_size[2] - array_size[3] +1 , U , V , F , G , P);
+      calculate_uv( dt , dx , dy , ir[0] - il[0] + 1,jt[0] - jb[0] +1 , U , V , F , G , P);
       t = t+dt;
       n = n+1;
   }
         write_vtkFile("szProblem.vtk", n, xlength, ylength, iproc, jproc,dx, dy, U, V, P,myrank);
-        free_matrix(U , array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
-        free_matrix(V , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 );
-        free_matrix(P , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
-        free_matrix(RS , array_size[0] , array_size[1] , array_size[3] , array_size[2] );
-        free_matrix(F , array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
-        free_matrix(G , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 );
-} 
+        free(omg_j);
+        free(omg_i);
+        free(il);
+        free(ir);
+        free(jt);
+        free(jb);
+        free(rank_l);
+        free(rank_r);
+        free(rank_t);
+        free(rank_b);
+        free_matrix(U , il[0] - 2 , ir[0] + 1 , jb[0] - 1 , jt[0]+1 );
+        free_matrix(V , il[0] - 1 , ir[0] + 1 , jb[0] - 2 , jt[0]+1 );
+        free_matrix(P , il[0] - 1 , ir[0] + 1 , jb[0] - 1 , jt[0]+1 );
+        free_matrix(RS , il[0] , ir[0] , jb[0] , jt[0] );
+        free_matrix(F , il[0] - 2 , ir[0] + 1 , jb[0] - 1 , jt[0]+1 );
+        free_matrix(G , il[0] - 1 , ir[0] + 1 , jb[0] - 2 , jt[0]+1 );
+
+
+
+}
+        
+
 
 
 

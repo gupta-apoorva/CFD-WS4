@@ -55,13 +55,13 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
 
    for (int i = 0;i < iproc ; i++){
          omg_i[i] = i*d1+d1;
-         printf("%d\n",omg_i[i] );
+         //printf("%d\n",omg_i[i] );
          if (d2-- > 0)
             omg_i[i]++;
        }
    for (int j = 0;j < jproc ; j++){
          omg_j[j] = j*d3+d3;
-         printf("%d\n",omg_j[j] );
+         //printf("%d\n",omg_j[j] );
          if (d4-- > 0)
             omg_j[j]++;
       }
@@ -93,7 +93,7 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
       jt[k] = omg_j[j];
 
 
-      printf("1st %d %d %d %d\n",il[k], ir[k] ,jt[k], jb[k] );
+      //printf("1st %d %d %d %d\n",il[k], ir[k] ,jt[k], jb[k] );
       
       
       // finding the neighbours of each block and saving them at relevent positions.  
@@ -126,7 +126,7 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
       }
       
 
-      printf("%d %d %d %d\n",rank_l[k], rank_r[k] ,rank_t[k], rank_b[k] );
+      //printf("%d %d %d %d\n",rank_l[k], rank_r[k] ,rank_t[k], rank_b[k] );
       k = k+1;
 
       //MPI_Send(p, 2, MPI_INT, i, 1, MPI_COMM_WORLD);
@@ -141,7 +141,7 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
          
          MPI_Send(n, 4, MPI_INT, i, 2, MPI_COMM_WORLD);
          MPI_Send(s, 4, MPI_INT, i, 3, MPI_COMM_WORLD);
-         printf("\n\n\n\nLoop  %d\n\n\n\n\n", k );
+         //printf("\n\n\n\nLoop  %d\n\n\n\n\n", k );
       }
    }
   }

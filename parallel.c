@@ -136,7 +136,7 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
     
    for (int i = 0; i < num_proc; ++i){
      if (i<num_proc&&i>0){
-         int n[4] = {rank_t[i], rank_l[i], rank_r[i], rank_b[i]};
+         int n[4] = {rank_l[i],rank_r[i],rank_t[i], rank_b[i]};
          int s[4] = {il[i], ir[i] ,jt[i], jb[i]};
          
          MPI_Send(n, 4, MPI_INT, i, 2, MPI_COMM_WORLD);

@@ -48,8 +48,7 @@ int main(int argn, char** args)
    double GY;                
    double t_end;            
    double xlength;          
-   double ylength;           
-   double dt;                
+   double ylength;                        
    double dx;             
    double dy;               
    int  imax;                
@@ -62,12 +61,7 @@ int main(int argn, char** args)
    double dt_value;
    int iproc;
    int jproc;
-   double** U;
-   double** V;
-   double** P;          
-   double** RS;
-   double** F;
-   double** G;
+
    int myrank;
    int num_proc;
    int *omg_i = NULL;
@@ -82,9 +76,7 @@ int main(int argn, char** args)
    int *rank_t = NULL;
    MPI_Status status;
   
-//setting the parameters
-read_parameters( "problem.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau,&itermax, &eps, &dt_value,&iproc,
-&jproc);
+
 
 
 // Initializing MPI
@@ -94,6 +86,19 @@ read_parameters( "problem.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xlength
 
 
 if (myrank == 0){
+           double dt; 
+           double** U;
+           double** V;
+           double** P;          
+           double** RS;
+           double** F;
+           double** G;
+        
+        //setting the parameters
+         read_parameters( "problem.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau,&itermax, 
+         &eps, &dt_value,&iproc,&jproc);
+        
+        MPI_Bcast(&dt, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
         omg_i = malloc(iproc*sizeof(int));
         omg_j = malloc(jproc*sizeof(int));
@@ -233,6 +238,18 @@ while (t<t_end)
 
 	
 else{
+
+
+           double dt; 
+           double** U;
+           double** V;
+           double** P;          
+           double** RS;
+           double** F;
+           double** G;
+
+        MPI_Bcast(&dt, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        printf("printing value of dt............. %f\n", dt );
 
 // Creating the arrays U,V and P
         //int* array_pos = malloc(2*sizeof(int));

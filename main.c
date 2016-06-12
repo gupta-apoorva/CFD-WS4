@@ -187,12 +187,12 @@ if (myrank == 0){
         free(rank_r);
         free(rank_t);
         free(rank_b);
-        free_matrix(U , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 );
-        free_matrix(V , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 );
-        free_matrix(P , aarray_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 );
-        free_matrix(RS ,array_size[1] - array_size[0] , 0 ,array_size[2] - array_size[3] );
-        free_matrix(F , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] + array_size[3] +1);
-        free_matrix(G , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2  );
+        free_matrix(U , 0, array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 );
+        free_matrix(V , 0, array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 );
+        free_matrix(P , 0, array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 );
+        free_matrix(RS ,0, array_size[1] - array_size[0] , 0 ,array_size[2] - array_size[3] );
+        free_matrix(F , 0, array_size[1] - array_size[0] + 2 ,  0 , array_size[2] + array_size[3] +1);
+        free_matrix(G ,0, array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2  );
         free(array_pos);
         free(array_size);
         free(array_neighbours);
@@ -321,12 +321,12 @@ while (t<t_end)
 
 
         write_vtkFile("szProblem.vtk", n, xlength, ylength, iproc, jproc,dx, dy, U, V, P,myrank);
-        free_matrix(U , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 );
-        free_matrix(V , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 );
-        free_matrix(P , aarray_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 );
-        free_matrix(RS ,array_size[1] - array_size[0] , 0 ,array_size[2] - array_size[3] );
-        free_matrix(F , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] + array_size[3] +1);
-        free_matrix(G , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2  );
+        free_matrix(U , 0, array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 );
+        free_matrix(V , 0, array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 );
+        free_matrix(P , 0, array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 );
+        free_matrix(RS ,0, array_size[1] - array_size[0] , 0 ,array_size[2] - array_size[3] );
+        free_matrix(F , 0, array_size[1] - array_size[0] + 2 ,  0 , array_size[2] + array_size[3] +1);
+        free_matrix(G ,0, array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2  );
 
         Programm_Sync("Synchronizing all the processors");
         Programm_Stop("Stoping Parallel Run");

@@ -111,41 +111,31 @@ if (myrank == 0){
         rank_b = malloc(iproc*jproc*sizeof(int));
         
         init_parallel (iproc, jproc, imax, jmax, &myrank, il, ir, jb, jt, rank_l, rank_r, rank_b, rank_t, omg_i , omg_j, num_proc );
-
+        printf("main after init p\n");
+        printf("Rank in main %d %d %d %d \n", *rank_l, *rank_r, *rank_t, *rank_b);  //1st element
+        printf("omg_i in main %d %d %d %d \n", omg_i[0], omg_i[1], omg_j[0], omg_j[1]);
 
         int* array_pos = malloc(2*sizeof(int));
         int* array_size = malloc(4*sizeof(int));
         int* array_neighbours = malloc(4*sizeof(int));
 
-        int k=1;
-        for (int i = 0 ; i<iproc ; i++)
-        {
-            for (int j = 1; j < jproc; ++j)
-            {
-                array_pos[0] = i;
-                array_pos[1] = j;
-
-                MPI_Send(array_pos,2,MPI_INT,myrank,1,MPI_COMM_WORLD);
-
-                array_size[0] = il[k];
-                array_size[1] = ir[k];
-                array_size[2] = jt[k];
-                array_size[3] = jb[k];
+        
+        array_pos[0] = 0;
+        array_pos[1] = 0;
+ 
+        array_size[0] = il[0];
+        array_size[1] = ir[0];
+        array_size[2] = jt[0];
+        array_size[3] = jb[0];
                 
-                MPI_Send(array_size,4,MPI_INT,myrank,2,MPI_COMM_WORLD);
 
-                array_neighbours[0] = rank_l[k];
-                array_neighbours[1] = rank_r[k];
-                array_neighbours[2] = rank_t[k];
-                array_neighbours[3] = rank_b[k];
-
-                MPI_Send(array_neighbours,4,MPI_INT,myrank,3,MPI_COMM_WORLD);
-                k++;
-            }
-        }    
+        array_neighbours[0] = rank_l[0];
+        array_neighbours[1] = rank_r[0];
+        array_neighbours[2] = rank_t[0];
+        array_neighbours[3] = rank_b[0];  
 
 
-// Creating the arrays U,V and P
+/*// Creating the arrays U,V and P
         U = matrix ( il[0] - 2 , ir[0] + 1 , jb[0] - 1 , jt[0]+1 );
         V = matrix ( il[0] - 1 , ir[0] + 1 , jb[0] - 2 , jt[0]+1 );
         P = matrix ( il[0] - 1 , ir[0] + 1 , jb[0] - 1 , jt[0]+1 );
@@ -162,8 +152,26 @@ if (myrank == 0){
         init_matrix(P , il[0] - 1 , ir[0] + 1 , jb[0] - 1 , jt[0]+1 , PI);
         init_matrix(RS , il[0] , ir[0] , jb[0] , jt[0] , 0);
         init_matrix(F , il[0] - 2 , ir[0] + 1 , jb[0] - 1 , jt[0]+1 , 0);
-        init_matrix(G , il[0] - 1 , ir[0] + 1 , jb[0] - 2 , jt[0]+1 , 0);
+        init_matrix(G , il[0] - 1 , ir[0] + 1 , jb[0] - 2 , jt[0]+1 , 0);*/
+
+        U = matrix ( array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
+        V = matrix ( array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 );
+        P = matrix ( array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
         
+
+// Creating arrays for right side of pressure poissons equation (RS) and F and G
+        RS = matrix ( array_size[0],array_size[1],array_size[3],array_size[2]);
+        F = matrix ( array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
+        G = matrix ( array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 );
+
+// Initializing the arrays U,V,P,RS,F and G
+        init_matrix(U , array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 , UI);
+        init_matrix(V , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 , VI);
+        init_matrix(P , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 , PI);
+        init_matrix(RS , array_size[0] , array_size[1] , array_size[3] , array_size[2] , 0);
+        init_matrix(F , array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 , 0);
+        init_matrix(G , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 , 0);
+        Program_Message("we are here \n \n \n \n");
 // initialize the time
         double t=0;
 // number of time steps
@@ -236,11 +244,15 @@ else{
         int* array_neighbours = malloc(4*sizeof(int));
 
         
-        MPI_Recv(array_size,4,MPI_INT,0,2,MPI_COMM_WORLD,&status);
-        printf("hakaka bakaka %d %d %d %d\n", *(array_size + 0),*(array_size + 1),*(array_size + 2),*(array_size + 3));
-        printf("main slave \n");
+        MPI_Recv(array_neighbours,4,MPI_INT,0,2,MPI_COMM_WORLD,&status);
+        printf("processes %d \n", myrank);
+        printf("Neighbours %d %d %d %d\n", *(array_neighbours + 0),*(array_neighbours + 1),*(array_neighbours + 2),*(array_neighbours + 3));
+        MPI_Recv(array_size,4,MPI_INT,0,3,MPI_COMM_WORLD,&status);
+        printf("Size %d %d %d %d\n", *(array_size + 0),*(array_size + 1),*(array_size + 2),*(array_size + 3));
         MPI_Recv(array_pos,2,MPI_INT,0,1,MPI_COMM_WORLD,&status);
-        MPI_Recv(array_neighbours,4,MPI_INT,0,3,MPI_COMM_WORLD,&status);
+        printf("Position %d %d \n", *(array_pos + 0),*(array_pos + 1));
+
+        
 
 
         U = matrix ( array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
@@ -261,6 +273,7 @@ else{
         init_matrix(F , array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 , 0);
         init_matrix(G , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 , 0);
         
+
 // initialize the time
         double t=0;
 // number of time steps
@@ -274,6 +287,7 @@ while (t<t_end)
       calculate_rs(dt,dx,dy, array_size[1] - array_size[0] + 1 , array_size[2] - array_size[3] +1 , F , G , RS);
       int it = 0;
       double res = 1000;
+
 
       while(it<itermax && res > eps) 
           {

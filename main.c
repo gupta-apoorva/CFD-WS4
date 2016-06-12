@@ -150,7 +150,7 @@ if (myrank == 0){
         calculate_dt(Re , tau , &dt , dx , dy , array_size[1] - array_size[0] + 1, array_size[2] - array_size[3] +1 , U , V );
         boundary_values(array_neighbours[0], array_neighbours[1], array_neighbours[2], array_neighbours[3] ,array_size[0], array_size[1], array_size[2],array_size[3], U , V , P);
         calculate_fg(Re,GX, GY, alpha, dt, dx, dy, array_size[1] - array_size[0] , array_size[2] - array_size[3] , U, V, F, G);
-                Program_Message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+                
         calculate_rs(dt,dx,dy, array_size[1] - array_size[0]  , array_size[2] - array_size[3] , F , G , RS);
 
         int it = 0;
@@ -158,28 +158,29 @@ if (myrank == 0){
 
         while(it<itermax && res > eps) 
         {
-            sor(omg, dx,dy,array_size[1] - array_size[0] + 1,array_size[2] - array_size[3] +1 , P, RS, &res);
-            int compRes;
+            sor(omg, dx,dy,array_size[1] - array_size[0] ,array_size[2] - array_size[3] , P, RS, &res);
+            int compRes = 0;
             for (int i = 1; i < num_proc; ++i)
             {
-                MPI_Recv(&compRes, 1, MPI_DOUBLE, i , 20 , MPI_COMM_WORLD, &status);
+                //MPI_Recv(&compRes, 1, MPI_DOUBLE, i , 20 , MPI_COMM_WORLD, &status);
                 res += compRes;             
             }
             //this command sends the maximum res to all processes. To receive value same command has to be given in other processes
-              MPI_Bcast(&res, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+                //MPI_Bcast(&res, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
               it++;   //we do not need to check iteration number all the processors will have same iteration number
         }
+        Program_Message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
         if (it>=itermax-1 && res > eps)
         printf("Not converged in %d iterations  Residual = %f \n",it, res);
         else
         printf("Converged in %d iterations  Residual = %f \n",it, res);
 
-        calculate_uv( dt , dx , dy , array_size[1] - array_size[0] + 1,array_size[2] - array_size[3] +1 , U , V , F , G , P);
+        calculate_uv( dt , dx , dy , array_size[1] - array_size[0] ,array_size[2] - array_size[3]  , U , V , F , G , P);
         t = t+dt;
         n = n+1;
     }
-        write_vtkFile("szProblem.vtk", n, xlength, ylength, iproc, jproc,dx, dy, U, V, P,myrank);
+        write_vtkFile("szProblem.vtk", n , xlength/2.0 , ylength/2.0 , array_size[1] - array_size[0], array_size[2] - array_size[3],dx, dy, U, V, P,myrank);
         free(omg_j);
         free(omg_i);
         free(il);
@@ -300,31 +301,33 @@ while (t<t_end)
         
         calculate_fg(Re,GX, GY, alpha, dt, dx, dy, array_size[1] - array_size[0] , array_size[2] - array_size[3]  , U, V, F, G);
         calculate_rs(dt,dx,dy, array_size[1] - array_size[0]  , array_size[2] - array_size[3]  , F , G , RS);
-                Program_Message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+                
         int it = 0;
         double res = 1000;
 
 
       while(it<itermax && res > eps) 
       {
-          sor(omg, dx,dy,array_size[1] - array_size[0] + 1,array_size[2] - array_size[3] +1 , P, RS, &res);
-          MPI_Send(&res, 1 , MPI_DOUBLE, 0, 20 , MPI_COMM_WORLD);
-          MPI_Bcast(&res, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+          sor(omg, dx,dy,array_size[1] - array_size[0] ,array_size[2] - array_size[3]  , P, RS, &res);
+          //MPI_Send(&res, 1 , MPI_DOUBLE, 0, 20 , MPI_COMM_WORLD);
+          //MPI_Bcast(&res, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
           it++; 
       }
-	/*if (it>=itermax-1 && res > eps){
-	printf("Not converged in %d iterations  Residual = %f \n",it, res);
+  Program_Message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+	if (it>=itermax-1 && res > eps){
+	printf("my rank = %d Not converged in %d iterations  Residual = %f \n",myrank,it, res);
 	}
 	else
-	printf("Converged in %d iterations  Residual = %f \n",it, res);*/
+	printf("my rank = %d Converged in %d iterations  Residual = %f \n",myrank,it, res);
 
-        calculate_uv( dt , dx , dy , array_size[1] - array_size[0] + 1,array_size[2] - array_size[3] +1 , U , V , F , G , P);
+        calculate_uv( dt , dx , dy , array_size[1] - array_size[0] ,array_size[2] - array_size[3] , U , V , F , G , P);
+        printf("calculate_uv\n\n\n\n");
         t = t+dt;
         n = n+1;
   }
 
 
-        write_vtkFile("szProblem.vtk", n, xlength, ylength, iproc, jproc,dx, dy, U, V, P,myrank);
+        write_vtkFile("szProblem.vtk", n , xlength/2.0 , ylength/2.0, array_size[1] - array_size[0], array_size[2] - array_size[3],dx, dy, U, V, P,myrank);
         free_matrix(U , 0, array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 );
         free_matrix(V , 0, array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 );
         free_matrix(P , 0, array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 );

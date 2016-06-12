@@ -40,7 +40,7 @@
 
 int main(int argn, char** args)
 {
-   double Re;               
+   /*double Re;               
    double UI;                
    double VI;               
    double PI;           
@@ -60,7 +60,7 @@ int main(int argn, char** args)
    double eps;              
    double dt_value;
    int iproc;
-   int jproc;
+   int jproc;*/
 
    int myrank;
    int num_proc;
@@ -86,6 +86,28 @@ int main(int argn, char** args)
 
 
 if (myrank == 0){
+
+           double Re;               
+           double UI;                
+           double VI;               
+           double PI;           
+           double GX;                
+           double GY;                
+           double t_end;            
+           double xlength;          
+           double ylength;                        
+           double dx;             
+           double dy;               
+           int  imax;                
+           int  jmax;               
+           double alpha;            
+           double omg;               
+           double tau;              
+           int  itermax;             
+           double eps;              
+           double dt_value;
+           int iproc;
+           int jproc;
            double dt; 
            double** U;
            double** V;
@@ -98,7 +120,28 @@ if (myrank == 0){
          read_parameters( "problem.dat", &Re , &UI , &VI, &PI, &GX, &GY, &t_end, &xlength, &ylength, &dt, &dx, &dy, &imax, &jmax, &alpha, &omg, &tau,&itermax, 
          &eps, &dt_value,&iproc,&jproc);
         
+        MPI_Bcast(&Re, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&UI, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&VI, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&PI, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&GX, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&GY, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&t_end, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&xlength, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&ylength, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         MPI_Bcast(&dt, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&dx, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&dy, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&imax, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&jmax, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&alpha, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&omg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&itermax, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&eps, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&dt_value, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&iproc, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&jproc, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
         omg_i = malloc(iproc*sizeof(int));
         omg_j = malloc(jproc*sizeof(int));
@@ -240,6 +283,27 @@ while (t<t_end)
 else{
 
 
+           double Re;               
+           double UI;                
+           double VI;               
+           double PI;           
+           double GX;                
+           double GY;                
+           double t_end;            
+           double xlength;          
+           double ylength;                        
+           double dx;             
+           double dy;               
+           int  imax;                
+           int  jmax;               
+           double alpha;            
+           double omg;               
+           double tau;              
+           int  itermax;             
+           double eps;              
+           double dt_value;
+           int iproc;
+           int jproc;
            double dt; 
            double** U;
            double** V;
@@ -248,7 +312,28 @@ else{
            double** F;
            double** G;
 
+        MPI_Bcast(&Re, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&UI, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&VI, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&PI, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&GX, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&GY, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&t_end, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&xlength, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&ylength, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         MPI_Bcast(&dt, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&dx, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&dy, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&imax, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&jmax, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&alpha, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&omg, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&tau, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&itermax, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&eps, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&dt_value, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&iproc, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&jproc, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         printf("printing value of dt............. %f\n", dt );
 
 // Creating the arrays U,V and P
@@ -295,6 +380,7 @@ else{
 while (t<t_end)
   {
       calculate_dt(Re , tau , &dt , dx , dy , array_size[1] - array_size[0] + 1, array_size[2] - array_size[3] +1 , U , V );
+      Program_Message("MMMMMMMMMMMMMMMM....................................................................................");
       boundary_values(array_neighbours[0], array_neighbours[1], array_neighbours[2], array_neighbours[3] ,array_size[0], array_size[1], array_size[2],array_size[3], U , V , P);
       calculate_fg(Re,GX, GY, alpha, dt, dx, dy, array_size[1] - array_size[0] + 1, array_size[2] - array_size[3] +1 , U, V, F, G);
       calculate_rs(dt,dx,dy, array_size[1] - array_size[0] + 1 , array_size[2] - array_size[3] +1 , F , G , RS);

@@ -150,7 +150,6 @@ if (myrank == 0){
         calculate_dt(Re , tau , &dt , dx , dy , array_size[1] - array_size[0] + 1, array_size[2] - array_size[3] +1 , U , V );
         boundary_values(array_neighbours[0], array_neighbours[1], array_neighbours[2], array_neighbours[3] ,array_size[0], array_size[1], array_size[2],array_size[3], U , V , P);
         calculate_fg(Re,GX, GY, alpha, dt, dx, dy, array_size[1] - array_size[0] , array_size[2] - array_size[3] , U, V, F, G);
-                Program_Message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         calculate_rs(dt,dx,dy, array_size[1] - array_size[0]  , array_size[2] - array_size[3] , F , G , RS);
 
         int it = 0;
@@ -170,6 +169,7 @@ if (myrank == 0){
               it++;   //we do not need to check iteration number all the processors will have same iteration number
         }
 
+
         if (it>=itermax-1 && res > eps)
         printf("Not converged in %d iterations  Residual = %f \n",it, res);
         else
@@ -179,7 +179,7 @@ if (myrank == 0){
         t = t+dt;
         n = n+1;
     }
-        write_vtkFile("szProblem.vtk", n, xlength, ylength, iproc, jproc,dx, dy, U, V, P,myrank);
+        write_vtkFile("szProblem.vtk", n, xlength, ylength, iproc, jproc,dx, dy, U, V, P,myrank,array_pos[0],array_pos[1]);
         free(omg_j);
         free(omg_i);
         free(il);
@@ -300,7 +300,7 @@ while (t<t_end)
         
         calculate_fg(Re,GX, GY, alpha, dt, dx, dy, array_size[1] - array_size[0] , array_size[2] - array_size[3]  , U, V, F, G);
         calculate_rs(dt,dx,dy, array_size[1] - array_size[0]  , array_size[2] - array_size[3]  , F , G , RS);
-                Program_Message("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        
         int it = 0;
         double res = 1000;
 
@@ -312,6 +312,7 @@ while (t<t_end)
           MPI_Bcast(&res, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
           it++; 
       }
+
 	/*if (it>=itermax-1 && res > eps){
 	printf("Not converged in %d iterations  Residual = %f \n",it, res);
 	}
@@ -324,7 +325,7 @@ while (t<t_end)
   }
 
 
-        write_vtkFile("szProblem.vtk", n, xlength, ylength, iproc, jproc,dx, dy, U, V, P,myrank);
+        write_vtkFile("szProblem.vtk", n, xlength, ylength, iproc, jproc,dx, dy, U, V, P,myrank,array_pos[0],array_pos[1]);
         free_matrix(U , 0, array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 );
         free_matrix(V , 0, array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 );
         free_matrix(P , 0, array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 );

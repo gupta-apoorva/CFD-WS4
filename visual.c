@@ -14,7 +14,9 @@ void write_vtkFile(const char *szProblem,
                  double **U,
                  double **V,
                  double **P,
-                 int myrank) {
+                 int myrank,
+                 double xCord,
+                 double yCord) {
   
   int i,j;
   char szFileName[80];
@@ -84,8 +86,8 @@ void write_vtkHeader( FILE *fp, int imax, int jmax,
 
 void write_vtkPointCoordinates( FILE *fp, int imax, int jmax, 
                       double dx, double dy) {
-  double originX = 0.0;  
-  double originY = 0.0;
+  double originX = xCord;  
+  double originY = yCord;
 
   int i = 0;
   int j = 0;

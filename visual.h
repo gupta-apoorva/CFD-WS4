@@ -32,7 +32,9 @@ void write_vtkFile(const char *szProblem,
                   double **U,
                   double **V,
                   double **P,
-                  int myrank);
+                  int myrank,
+                  double xCord,
+                  double yCord);
 
 /**
  * Method for writing header information in vtk format. 

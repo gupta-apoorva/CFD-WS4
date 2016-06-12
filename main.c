@@ -124,7 +124,7 @@ if (myrank == 0){
 
  // Creating arrays for U,V,P RS, F and G   
         U = matrix (  0 , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 );
-        V = matrix (  0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 );
+        V = matrix (  0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 );
         P = matrix (  0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 );
         RS = matrix ( 0 , array_size[1] - array_size[0] , 0 ,array_size[2] - array_size[3]);
         F = matrix (  0 , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] + array_size[3] +1 );
@@ -132,7 +132,7 @@ if (myrank == 0){
 
 // Initializing the arrays U,V,P,RS,F and G
         init_matrix(U , 0 , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 , UI);
-        init_matrix(V , 0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 , VI);
+        init_matrix(V , 0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 , VI);
         init_matrix(P , 0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 , PI);
         init_matrix(RS , 0 , array_size[1] - array_size[0] , 0 , array_size[2] - array_size[3] , 0);
         init_matrix(F ,  0 , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] + array_size[3] +1 , 0);
@@ -187,12 +187,12 @@ if (myrank == 0){
         free(rank_r);
         free(rank_t);
         free(rank_b);
-        free_matrix(U , array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
-        free_matrix(V , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 );
-        free_matrix(P , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
-        free_matrix(RS , array_size[0] , array_size[1] , array_size[3] , array_size[2] );
-        free_matrix(F , array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
-        free_matrix(G , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 );
+        free_matrix(U , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 );
+        free_matrix(V , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 );
+        free_matrix(P , aarray_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 );
+        free_matrix(RS ,array_size[1] - array_size[0] , 0 ,array_size[2] - array_size[3] );
+        free_matrix(F , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] + array_size[3] +1);
+        free_matrix(G , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2  );
         free(array_pos);
         free(array_size);
         free(array_neighbours);
@@ -268,7 +268,7 @@ else{
 
  // Creating arrays for U,V,P RS, F and G   
         U = matrix (  0 , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 );
-        V = matrix (  0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 );
+        V = matrix (  0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 );
         P = matrix (  0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 );
         RS = matrix ( 0 , array_size[1] - array_size[0] , 0 ,array_size[2] - array_size[3]);
         F = matrix (  0 , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] + array_size[3] +1 );
@@ -276,7 +276,7 @@ else{
 
 // Initializing the arrays U,V,P,RS,F and G
         init_matrix(U , 0 , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 , UI);
-        init_matrix(V , 0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 , VI);
+        init_matrix(V , 0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 , VI);
         init_matrix(P , 0 , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 , PI);
         init_matrix(RS , 0 , array_size[1] - array_size[0] , 0 ,array_size[2] - array_size[3] , 0);
         init_matrix(F ,  0 , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] + array_size[3] +1 , 0);
@@ -292,8 +292,9 @@ else{
 
 while (t<t_end)
   {
-        calculate_dt(Re , tau , &dt , dx , dy , array_size[1] - array_size[0] + 1, array_size[2] - array_size[3] +1 , U , V );
+        //calculate_dt(Re , tau , &dt , dx , dy , array_size[1] - array_size[0] + 1, array_size[2] - array_size[3] +1 , U , V );
         boundary_values(array_neighbours[0], array_neighbours[1], array_neighbours[2], array_neighbours[3] ,array_size[0], array_size[1], array_size[2],array_size[3], U , V , P);
+        
         calculate_fg(Re,GX, GY, alpha, dt, dx, dy, array_size[1] - array_size[0] + 1, array_size[2] - array_size[3] +1 , U, V, F, G);
         calculate_rs(dt,dx,dy, array_size[1] - array_size[0] + 1 , array_size[2] - array_size[3] +1 , F , G , RS);
         int it = 0;
@@ -320,12 +321,12 @@ while (t<t_end)
 
 
         write_vtkFile("szProblem.vtk", n, xlength, ylength, iproc, jproc,dx, dy, U, V, P,myrank);
-        free_matrix(U , array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
-        free_matrix(V , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 );
-        free_matrix(P , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
-        free_matrix(RS , array_size[0] , array_size[1] , array_size[3] , array_size[2] );
-        free_matrix(F , array_size[0] - 2 , array_size[1] + 1 , array_size[3] - 1 , array_size[2]+1 );
-        free_matrix(G , array_size[0] - 1 , array_size[1] + 1 , array_size[3] - 2 , array_size[2]+1 );
+        free_matrix(U , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 );
+        free_matrix(V , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2 );
+        free_matrix(P , aarray_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +1 );
+        free_matrix(RS ,array_size[1] - array_size[0] , 0 ,array_size[2] - array_size[3] );
+        free_matrix(F , array_size[1] - array_size[0] + 2 ,  0 , array_size[2] + array_size[3] +1);
+        free_matrix(G , array_size[1] - array_size[0] + 1 ,  0 , array_size[2] - array_size[3] +2  );
 
         Programm_Sync("Synchronizing all the processors");
         Programm_Stop("Stoping Parallel Run");

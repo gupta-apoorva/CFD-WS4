@@ -32,7 +32,11 @@ void write_vtkFile(const char *szProblem,
                   double **U,
                   double **V,
                   double **P,
-                  int myrank);
+int il,
+int ir,
+int jt,
+int jb,
+int myrank);
 
 /**
  * Method for writing header information in vtk format. 
@@ -43,7 +47,7 @@ void write_vtkFile(const char *szProblem,
  * @param dx      mesh size dx
  * @param dy      mesh size dy
  * 
- * @author Tobias Neckel
+ * @author Group 3
  */
 void write_vtkHeader( FILE *fp, int imax, int jmax, 
                       double dx, double dy);
@@ -60,6 +64,10 @@ void write_vtkHeader( FILE *fp, int imax, int jmax,
  * @author Tobias Neckel
  */
 void write_vtkPointCoordinates( FILE *fp, int imax, int jmax, 
-                                double dx, double dy);
+                                double dx, double dy,int il , int ir, int jt, int jb);
+void output_uvp(double **U,double **V,double **P,int il,int ir,
+int jb,int jt,int omg_i,int omg_j,char *output_file);
+void write_vtkPointCoordinates2( FILE *fp, int il,int ir,
+int jb,int jt,int omg_i,int omg_j );
 
 #endif

@@ -2,7 +2,6 @@
 #include <errno.h>
 #include <stdio.h>
 #include "helper.h"
-//this is a test 
 
 /* ----------------------------------------------------------------------- */
 /*                             auxiliary functions                         */
@@ -332,8 +331,8 @@ void read_matrix( const char* szFileName,       /* filename */
 double **matrix( int nrl, int nrh, int ncl, int nch )
 {
    int i;
-   int nrow =  nrh - nrl + 1;	/* compute number of lines */
-   int ncol =  nch - ncl + 1;	/* compute number of columns */
+   int nrow = nrh - nrl + 1;	/* compute number of lines */
+   int ncol = nch - ncl + 1;	/* compute number of columns */
    
    double **pArray  = (double **) malloc((size_t)( nrow * sizeof(double*)) );
    double  *pMatrix = (double *)  malloc((size_t)( nrow * ncol * sizeof( double )));

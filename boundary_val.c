@@ -60,7 +60,7 @@ void boundaryvalues_u(int rank_l, int rank_r, int rank_t, int rank_b ,int il, in
 	if (rank_l == MPI_PROC_NULL )
 	{
 		int i = 1;
-		for (int j = 0 ; j<=jt-jb+1 ; j++){
+		for (int j = 0 ; j<jt-jb +2 ; j++){
 				U[i][j] = 0;
 			    U[i-1][j] =0;}
 		}
@@ -71,9 +71,10 @@ void boundaryvalues_u(int rank_l, int rank_r, int rank_t, int rank_b ,int il, in
 	{
 		int i = ir-il+1;
 		
-			for (int j = 0 ; j<=jt-jb+1 ; j++){
+			for (int j = 0 ; j<jt-jb+2 ; j++){
 				U[i][j] = 0;
-			    U[i+1][j] =0;}
+			    U[i+1][j] =0;
+			}
 		
 	}
 
@@ -81,7 +82,7 @@ void boundaryvalues_u(int rank_l, int rank_r, int rank_t, int rank_b ,int il, in
 	{
 		int j = jt-jb+1;
 		
-			for (int i = 0 ; i<=ir-il+2 ; i++)
+			for (int i = 0 ; i<ir-il+3 ; i++)
 			    U[i][j] = 2.0 - U[i][j-1];
 		
 	}
@@ -91,7 +92,7 @@ void boundaryvalues_u(int rank_l, int rank_r, int rank_t, int rank_b ,int il, in
 	{
 		int j = 0;
 		
-			for (int i = 0 ; i<=ir-il+2 ; i++)
+			for (int i = 0 ; i< ir-il+3 ; i++)
 				U[i][j] = -U[i][j+1];
 		
 	}

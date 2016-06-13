@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "math.h"
 #include "parallel.h"
+#include "mpi.h"
 
 /* calculate the tine stepping based on the value of tau*/
 
@@ -89,12 +90,28 @@ for (int i=1;i<=imax;i++)
 
 // calculate_fg function
  
-void calculate_fg(double Re,double GX,double GY,double alpha,double dt,double dx,  double dy,int imax,int jmax,  double **U,  double **V,  double **F,  double **G)
+void calculate_fg(double Re,double GX,double GY,double alpha,double dt,double dx,  double dy,int imax,int jmax,  double **U,  double **V,  double **F,  double **G ,
+                   int rank_l, int rank_r, int rank_t, int rank_b)
   {
+    int l,r,t,b;
+    if(rank_l == MPI_PROC_NULL)
+      l = 2;
+    else
+      l = 1;
+
+    if(rank_r == MPI_PROC_NULL)
+      r = imax-2;
+    else
+      r = imax-1;
+
+    b = 1;
+    t = jmax-2;
+
+
     double duvdy,du2dx,d2udx2,d2udy2,d2vdx2,d2vdy2,duvdx,dv2dy;
-   for (int i = 1; i <= imax-1; ++i)
+   for (int i = l; i <= r; ++i)
   {
-    for (int j = 1; j <= jmax; ++j)
+    for (int j = b; j <= t; ++j)
     {
       duvdy = 1/(4*dy)*(((V[i][j]+V[i+1][j])*(U[i][j]+U[i][j+1]))-(V[i][j-1]+V[i+1][j-1])*(U[i][j-1]+U[i][j])+alpha*((abs(V[i][j]+V[i+1][j])*(U[i][j]-U[i][j+1]))-abs(V[i][j-1]+V[i+1][j-1])*(U[i][j-1]-U[i][j])));
       du2dx = 1/(4*dx)*(((pow((U[i][j]+U[i+1][j]),2))-(pow((U[i-1][j]+U[i][j]),2)))+alpha*((abs(U[i][j]+U[i+1][j]))*(U[i][j]-U[i+1][j])-(abs(U[i-1][j]+U[i][j]))*(U[i-1][j]-U[i][j])));
@@ -105,9 +122,23 @@ void calculate_fg(double Re,double GX,double GY,double alpha,double dt,double dx
     }
   }
  
-  for (int i = 1 ; i <= imax ; i++)
+
+    if(rank_l == MPI_PROC_NULL)
+      b = 2;
+    else
+      b = 1;
+
+    if(rank_r == MPI_PROC_NULL)
+      t = jmax-2;
+    else
+      t = jmax-1;
+
+    l = 1;
+    r = imax-2;
+
+  for (int i = l ; i <= r ; i++)
   {
-    for (int j = 1; j<=jmax-1 ; j++)
+    for (int j = b; j<=t ; j++)
     {
       d2vdx2 = (V[i+1][j]-2*V[i][j]+V[i-1][j])/(dx*dx);
       d2vdy2 = (V[i][j+1]-2*V[i][j]+V[i][j-1])/(dy*dy);

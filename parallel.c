@@ -52,6 +52,8 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
    int d2 = imax%iproc;
    int d3 = jmax/jproc;
    int d4 = jmax%jproc;
+   
+
 
    for (int i = 0;i < iproc ; i++){
          omg_i[i] = i*d1+d1;
@@ -170,7 +172,7 @@ void pressure_comm(double **P, int il, int ir , int jb, int jt, int rank_l, int 
       {
          bufSend[j] = P[i][j];
       }
-      MPI_Sendrecv(bufSend, jt-jb+2, MPI_DOUBLE, rank_l, 0, bufRecv, jt-jb+2 ,MPI_DOUBLE, rank_l , 0 ,MPI_COMM_WORLD, status);
+      MPI_Sendrecv(bufSend, jt-jb+2, MPI_DOUBLE, rank_l, 0, bufRecv, jt-jb+2 ,MPI_DOUBLE, chunk , 0 ,MPI_COMM_WORLD, status);
 
       i =0;
       for (int j = 0;j<=jt-jb+1;j++)
@@ -187,7 +189,7 @@ void pressure_comm(double **P, int il, int ir , int jb, int jt, int rank_l, int 
          bufSend[j] = P[i][j];
       }
       
-      MPI_Sendrecv(bufSend, jt-jb+2, MPI_DOUBLE, rank_r, 0, bufRecv, jt-jb+2 ,MPI_DOUBLE, rank_r  , 0 ,MPI_COMM_WORLD, status);
+      MPI_Sendrecv(bufSend, jt-jb+2, MPI_DOUBLE, rank_r, 0, bufRecv, jt-jb+2 ,MPI_DOUBLE, chunk  , 0 ,MPI_COMM_WORLD, status);
       
       i = ir-il+1;
       for (int j = 0;j<=jt-jb+1;j++)
@@ -204,7 +206,7 @@ void pressure_comm(double **P, int il, int ir , int jb, int jt, int rank_l, int 
       {
          bufSend[i] = P[i][j];
       }
-      MPI_Sendrecv(bufSend, ir-il+2, MPI_DOUBLE, rank_t, 0, bufRecv, ir-il+2 ,MPI_DOUBLE, rank_t  , 0 ,MPI_COMM_WORLD, status);
+      MPI_Sendrecv(bufSend, ir-il+2, MPI_DOUBLE, rank_t, 0, bufRecv, ir-il+2 ,MPI_DOUBLE, chunk  , 0 ,MPI_COMM_WORLD, status);
       
       j = jt-jb+1;
       for (int i = 0;i<=ir-il+1;i++)
@@ -221,7 +223,7 @@ void pressure_comm(double **P, int il, int ir , int jb, int jt, int rank_l, int 
       {
          bufSend[i] = P[i][j];
       }
-       MPI_Sendrecv(bufSend, ir-il+2, MPI_DOUBLE, rank_b, 0, bufRecv, ir-il+2 ,MPI_DOUBLE, rank_b  , 0 ,MPI_COMM_WORLD, status);
+       MPI_Sendrecv(bufSend, ir-il+2, MPI_DOUBLE, rank_b, 0, bufRecv, ir-il+2 ,MPI_DOUBLE, chunk , 0 ,MPI_COMM_WORLD, status);
       j = 1;
       for (int i = 0;i<=ir-il+1;i++)
       {
@@ -260,7 +262,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
       {
          bufSend[j] = U[i][j];
       }
-      MPI_Sendrecv(bufSend, jt-jb+2, MPI_DOUBLE, rank_l, 0, bufRecv, jt-jb+2 ,MPI_DOUBLE, rank_l , 0 ,MPI_COMM_WORLD, status);
+      MPI_Sendrecv(bufSend, jt-jb+2, MPI_DOUBLE, rank_l, 0, bufRecv, jt-jb+2 ,MPI_DOUBLE, chunk , 0 ,MPI_COMM_WORLD, status);
 
       i =0;
       for (int j = 0;j<=jt-jb+1;j++)
@@ -278,7 +280,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
          bufSend[j] = U[i][j];
       }
     
-      MPI_Sendrecv(bufSend, jt-jb+2, MPI_DOUBLE, rank_r, 0, bufRecv, jt-jb+2 ,MPI_DOUBLE, rank_r  , 0 ,MPI_COMM_WORLD, status);
+      MPI_Sendrecv(bufSend, jt-jb+2, MPI_DOUBLE, rank_r, 0, bufRecv, jt-jb+2 ,MPI_DOUBLE, chunk , 0 ,MPI_COMM_WORLD, status);
       
       i = ir-il+2;
       for (int j = 0;j<=jt-jb+1;j++)
@@ -296,7 +298,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
          bufSend[i] = U[i][j];
       }
   
-      MPI_Sendrecv(bufSend, ir-il+3, MPI_DOUBLE, rank_t, 0, bufRecv, ir-il+3 ,MPI_DOUBLE, rank_t  , 0 ,MPI_COMM_WORLD, status);
+      MPI_Sendrecv(bufSend, ir-il+3, MPI_DOUBLE, rank_t, 0, bufRecv, ir-il+3 ,MPI_DOUBLE, chunk  , 0 ,MPI_COMM_WORLD, status);
       j = jt-jb+1;
       for (int i = 0;i<=ir-il+2;i++)
       {
@@ -314,7 +316,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
          bufSend[i] = U[i][j];
       }
       
-      MPI_Sendrecv(bufSend, ir-il+3, MPI_DOUBLE, rank_b, 0, bufRecv, ir-il+3 ,MPI_DOUBLE, rank_b  , 0 ,MPI_COMM_WORLD, status);
+      MPI_Sendrecv(bufSend, ir-il+3, MPI_DOUBLE, rank_b, 0, bufRecv, ir-il+3 ,MPI_DOUBLE, chunk , 0 ,MPI_COMM_WORLD, status);
       j = 1;
       for (int i = 0;i<=ir-il+2;i++)
       {
@@ -332,7 +334,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
       {
          bufSend[j] = V[i][j];
       }
-      MPI_Sendrecv(bufSend, jt-jb+3, MPI_DOUBLE, rank_l, 0, bufRecv, jt-jb+3 ,MPI_DOUBLE, rank_l , 0 ,MPI_COMM_WORLD, status);
+      MPI_Sendrecv(bufSend, jt-jb+3, MPI_DOUBLE, rank_l, 0, bufRecv, jt-jb+3 ,MPI_DOUBLE, chunk , 0 ,MPI_COMM_WORLD, status);
 
       i =0;
       for (int j = 0;j<=jt-jb+2;j++)
@@ -349,7 +351,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
          bufSend[j] = V[i][j];
       }
       
-      MPI_Sendrecv(bufSend, jt-jb+3, MPI_DOUBLE, rank_r, 0, bufRecv, jt-jb+3 ,MPI_DOUBLE, rank_r  , 0 ,MPI_COMM_WORLD, status);
+      MPI_Sendrecv(bufSend, jt-jb+3, MPI_DOUBLE, rank_r, 0, bufRecv, jt-jb+3 ,MPI_DOUBLE, chunk  , 0 ,MPI_COMM_WORLD, status);
       i = ir-il+1;
       for (int j = 0;j<=jt-jb+2;j++)
       {
@@ -364,7 +366,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
       {
          bufSend[i] = V[i][j];
       }
-      MPI_Sendrecv(bufSend, ir-il+2, MPI_DOUBLE, rank_t, 0, bufRecv, ir-il+2 ,MPI_DOUBLE, rank_t  , 0 ,MPI_COMM_WORLD, status);
+      MPI_Sendrecv(bufSend, ir-il+2, MPI_DOUBLE, rank_t, 0, bufRecv, ir-il+2 ,MPI_DOUBLE, chunk  , 0 ,MPI_COMM_WORLD, status);
       j = jt-jb+2;
       for (int i = 0;i<=ir-il+1;i++)
       {
@@ -379,7 +381,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jb, int jt, int rank_l,
       {
          bufSend[i] = V[i][j];
       }
-       MPI_Sendrecv(bufSend, ir-il+2, MPI_DOUBLE, rank_b, 0, bufRecv, ir-il+2 ,MPI_DOUBLE, rank_b  , 0 ,MPI_COMM_WORLD, status);
+       MPI_Sendrecv(bufSend, ir-il+2, MPI_DOUBLE, rank_b, 0, bufRecv, ir-il+2 ,MPI_DOUBLE, chunk  , 0 ,MPI_COMM_WORLD, status);
       j = 2;
       for (int i = 0;i<=ir-il+1;i++)
       {

@@ -4,11 +4,13 @@
 
 // Boundary values for pressure..
 
-void boundary_values(int rank_l, int rank_r, int rank_t, int rank_b ,int il, int ir, int jt,int jb,double** U,double** V,double** P)
+void boundary_values(int rank_l, int rank_r, int rank_t, int rank_b ,int il, int ir, int jt,int jb,double** U,double** V , double** F, double** G)
 {
-	boundaryvalues_p(rank_l , rank_r , rank_t , rank_b , il , ir, jt , jb , P);
+	//boundaryvalues_p(rank_l , rank_r , rank_t , rank_b , il , ir, jt , jb , P);
 	boundaryvalues_u(rank_l , rank_r , rank_t , rank_b , il , ir, jt , jb , U);
 	boundaryvalues_v( rank_l , rank_r , rank_t , rank_b , il , ir, jt , jb , V);
+	boundaryvalues_F(rank_l , rank_r , rank_t , rank_b , il , ir, jt , jb , F , U);
+	boundaryvalues_G(rank_l , rank_r , rank_t , rank_b , il , ir, jt , jb , G , V);
 }
 
 void boundaryvalues_p(int rank_l, int rank_r, int rank_t, int rank_b ,int il, int ir, int jt,int jb,double** P)
@@ -139,6 +141,54 @@ void boundaryvalues_v(int rank_l, int rank_r, int rank_t, int rank_b , int il, i
 		
 	}
 }
+
+
+void boundaryvalues_F(int rank_l, int rank_r, int rank_t, int rank_b ,int il, int ir, int jt,int jb,double** F, double **U)
+{
+	if (rank_l == MPI_PROC_NULL )
+	{
+		int i = 1;
+		for (int j = 0 ; j<=jt-jb+1 ; j++){
+				F[i][j] = U[i][j];
+			    F[i-1][j] = U[i][j];}
+		}
+	
+
+
+	if (rank_r == MPI_PROC_NULL )
+	{
+		int i = ir-il+1;
+		
+			for (int j = 0 ; j<=jt-jb+1 ; j++){
+				F[i][j] = U[i][j];
+			    F[i+1][j] = U[i+1][j];}
+		
+	}
+}
+
+void boundaryvalues_G(int rank_l, int rank_r, int rank_t, int rank_b , int il, int ir, int jt,int jb,double** G, double** V)
+{
+	if (rank_t == MPI_PROC_NULL )
+	{
+		int j = jt-jb+1;
+		
+			for (int i = 0 ; i<=ir-il+1 ; i++){
+			G[i][j] = V[i][j];
+			G[i][j+1] = V[i][j+1];}
+		
+	}
+
+	if (rank_b == MPI_PROC_NULL )
+	{
+		int j = 0;
+		
+			for (int i = 0 ; i<=ir-il+1 ; i++){
+			G[i][j] = V[i][j];
+			G[i][j+1] = V[i][j+1];}
+		
+	}
+}
+
 
 
 /*

@@ -2,7 +2,6 @@
 #include "visual.h"
 #include <stdio.h>
 
-
 void write_vtkFile(const char *szProblem,
 		 int    timeStepNumber,
 		 double xlength,
@@ -84,8 +83,8 @@ void write_vtkHeader( FILE *fp, int imax, int jmax,
 
 void write_vtkPointCoordinates( FILE *fp, int imax, int jmax, 
                       double dx, double dy) {
-  double originX = 0.0;  
-  double originY = 0.0;
+  double originX = 0;  
+  double originY = 0;
 
   int i = 0;
   int j = 0;

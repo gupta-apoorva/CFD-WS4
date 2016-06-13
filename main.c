@@ -171,6 +171,8 @@ int main(int argn, char** args)
     }
 
     //write_vtkFile("szProblem.vtk", n , xlength/2.0 , ylength/2.0 , array_size[1] - array_size[0], array_size[2] - array_size[3],dx, dy, U, V, P,myrank,array_pos[0],array_pos[1]);
+    
+    // Freeing all the momory allocated on the processor master processor.
     free(omg_j);
     free(omg_i);
     free(il);
@@ -273,7 +275,8 @@ int main(int argn, char** args)
     }
 
     // write_vtkFile("szProblem.vtk", n , xlength/2.0 , ylength/2.0, array_size[1] - array_size[0], array_size[2] - array_size[3],dx, dy, U, V, P,myrank);
-
+    
+    // Freeing all the momory allocated on the processor.
     free(array_size);
     free(array_neighbours);
     free_matrix(U , 0, array_size[1] - array_size[0] + 2 ,  0 , array_size[2] - array_size[3] +1 );

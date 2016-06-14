@@ -1,29 +1,30 @@
 #include "sor.h"
 #include <math.h>
 #include "parallel.h"
+#include "boundary_val.h"
 
 void sor(
-  double omg,
-  double dx,
-  double dy,
-  int    imax,
-  int    jmax,
-  double **P,
-  double **RS,
-  double *res,
-  int il, 
-  int ir, 
-  int jt,
-  int jb, 
-  int rank_l, 
-  int rank_r, 
-  int rank_t, 
-  int rank_b,
-  double* bufSend,
-  double* bufRecv,
-  MPI_Status status,
-  int myrank
-) {
+        double omg,
+        double dx,
+        double dy,
+        int    imax,
+        int    jmax,
+        double **P,
+        double **RS,
+        double *res,
+        int il, 
+        int ir, 
+        int jt,
+        int jb, 
+        int rank_l, 
+        int rank_r, 
+        int rank_t, 
+        int rank_b,
+        double* bufSend,
+        double* bufRecv,
+        MPI_Status status,
+        int myrank) 
+{
 
   int i,j;
   double rloc;
@@ -36,7 +37,9 @@ void sor(
               + coeff*(( P[i+1][j]+P[i-1][j])/(dx*dx) + ( P[i][j+1]+P[i][j-1])/(dy*dy) - RS[i][j]);
     }
   }
+
   pressure_comm(P, il, ir, jt,jb, rank_l, rank_r, rank_t, rank_b, bufSend, bufRecv, &status, myrank);
+
   /* compute the residual */
   rloc = 0;
   for(i = 1; i <= imax; i++) {
@@ -47,19 +50,11 @@ void sor(
   }
   //rloc = rloc/(imax*jmax);
   //rloc = sqrt(rloc);
+
   /* set residual */
   *res = rloc;
 
-  
-
-  /* set boundary values */
-  /*for(i = 1; i <= imax; i++) {
-    P[i][0] = P[i][1];
-    P[i][jmax+1] = P[i][jmax];
-  }
-  for(j = 1; j <= jmax; j++) {
-    P[0][j] = P[1][j];
-    P[imax+1][j] = P[imax][j];
-  }*/
+  // Setting the boundary values for pressure based on its neighbours
+  boundaryvalues_p(rank_l, rank_r, rank_t, rank_b , il , ir , jt , jb , P);
 }
 

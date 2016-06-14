@@ -60,8 +60,9 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
     *omg_i = x;
     *omg_j = y;
 
+  // Calculating the left, right ,top and bottom rank of the each chunk
     if(x == 0){
-    *rank_l = MPI_PROC_NULL;
+    *rank_l = MPI_PROC_NULL; 
     }
     else {
     *rank_l = jproc*(x-1)+y;
@@ -91,59 +92,60 @@ void init_parallel (int iproc, int jproc, int imax, int jmax, int *myrank, int *
    
 
 
-      // finding the size of each block and saving them at the correct location.
-      if (x==0){
-         *il = 0;
-      }
-      else{ 
-        *il = d1*x;
-      }
-      
-      *ir = d1*(x+1);
+    // finding the size of each block and saving them at the correct location.
+    if (x==0){
+    *il = 0;
+    }
+    else{ 
+    *il = d1*x;
+    }
 
-      if(d2>x)
-      { if (x == 0)
+    *ir = d1*(x+1);
+
+    if(d2>x){
+      if (x == 0)
         *ir = *ir + x +1;
-         else
-        {
-          *il = *il + x;
-          *ir = *ir + x +1;
-        }
-       }
-       else
-       {
-        *il = *il + d2;
-        *ir = *ir + d2; 
-       }
-
-      
-      if (y==0){
-         *jb = 0;      
-      }
       else{
-         *jb = y*d3;
+      *il = *il + x;
+      *ir = *ir + x +1;
       }
-      
-      *jt = d3*(y+1);
+    }
+    else
+    {
+    *il = *il + d2;
+    *ir = *ir + d2; 
+    }
 
-      if(d4>y)
-      { if (y ==0)
-         *jt = *jt + y+1;
-         else
-        {
-          *jb = *jb + y;
-          *jt = *jt + y+1;
-        }
-      }
-      else
-      {
-          *jb = *jb + d4;
-          *jt = *jt + d4;
-      }
 
+    if (y==0){
+    *jb = 0;      
+    }
+    else{
+    *jb = y*d3;
+    }
+
+    *jt = d3*(y+1);
+
+    if(d4>y){
+      if (y ==0)
+      *jt = *jt + y+1;
+      else{
+      *jb = *jb + y;
+      *jt = *jt + y+1;
+      }
+    }
+    else{
+    *jb = *jb + d4;
+    *jt = *jt + d4;
+    }
   }
 
   
+//  Pressure communication taking place
+//  1st the current processor sends data to its left neighbour and receives from its right neighbour.
+//  2nd the current processor sends data to its right neighbour and receives from its left neighbour.
+//  3rd the current processor sends data to top top neighbour and receives from its bottom neighbour.
+//  4th the current processor sends data to its bottom neighbour and receives from its top neighbour.
 
 void pressure_comm(double **P, int il, int ir , int jt, int jb, int rank_l, int rank_r, int rank_t, int rank_b, double *bufSend, double* bufRecv, MPI_Status *status, int chunk)
 {
@@ -159,14 +161,13 @@ void pressure_comm(double **P, int il, int ir , int jt, int jb, int rank_l, int 
       }
 
       MPI_Sendrecv(bufSend, y, MPI_DOUBLE, rank_l, 21 , bufRecv, y ,MPI_DOUBLE, rank_r , 22 ,MPI_COMM_WORLD, status);
-
-
-     i =0;
+      
+      i = ir-il+1;
       for (int j = 0;j<=jt-jb+1;j++)
       {
-        //printf("bufRecv[j]  %f \n" , bufRecv[j]);
           P[i][j] = bufRecv[j];
       }
+      
    }
 
    if (rank_r != MPI_PROC_NULL)
@@ -178,7 +179,7 @@ void pressure_comm(double **P, int il, int ir , int jt, int jb, int rank_l, int 
       }
       
       MPI_Sendrecv(bufSend, y, MPI_DOUBLE, rank_r, 22 , bufRecv, y ,MPI_DOUBLE, rank_l  , 21 ,MPI_COMM_WORLD, status);;
-      i = ir-il+1;
+      i =0;
       for (int j = 0;j<=jt-jb+1;j++)
       {
           P[i][j] = bufRecv[j];
@@ -194,12 +195,12 @@ void pressure_comm(double **P, int il, int ir , int jt, int jb, int rank_l, int 
          bufSend[i] = P[i][j];
       }
       MPI_Sendrecv(bufSend, x, MPI_DOUBLE, rank_t, 0, bufRecv, x ,MPI_DOUBLE, rank_b  , 0 ,MPI_COMM_WORLD, status);
-      
-      j = jt-jb+1;
+      j = 0;
       for (int i = 0;i<=ir-il+1;i++)
       {
           P[i][j] = bufRecv[i];
       }
+      
    }
    
 
@@ -211,7 +212,7 @@ void pressure_comm(double **P, int il, int ir , int jt, int jb, int rank_l, int 
          bufSend[i] = P[i][j];
       }
        MPI_Sendrecv(bufSend, x, MPI_DOUBLE, rank_b, 0, bufRecv, x ,MPI_DOUBLE, rank_t , 0 ,MPI_COMM_WORLD, status);
-      j = 0;
+      j = jt-jb+1;
       for (int i = 0;i<=ir-il+1;i++)
       {
           P[i][j] = bufRecv[i];
@@ -224,22 +225,11 @@ void pressure_comm(double **P, int il, int ir , int jt, int jb, int rank_l, int 
 
 void uv_comm(double **U,double **V, int il, int ir , int jt, int jb, int rank_l, int rank_r, int rank_b, int rank_t, double *bufSend, double* bufRecv, MPI_Status *status, int chunk)
 {
-   int biggest;
-   if (ir-il>jt-jb)
-   {
-      biggest = ir-il;
-   }   
-   else
-   {
-      biggest = jt-jb;
-   }
-
-   bufSend = (double*) malloc((biggest+3)*sizeof(double));
-   bufRecv = (double*) malloc((biggest+3)*sizeof(double));
-
-
-// Communicaing the values of U
-
+    //  Horizontal velocity communication taking place
+    //  1st the current processor sends data to its left neighbour and receives from its right neighbour.
+    //  2nd the current processor sends data to its right neighbour and receives from its left neighbour.
+    //  3rd the current processor sends data to top top neighbour and receives from its bottom neighbour.
+    //  4th the current processor sends data to its bottom neighbour and receives from its top neighbour.
    if (rank_l != MPI_PROC_NULL)
    {
       int i =2;
@@ -248,12 +238,12 @@ void uv_comm(double **U,double **V, int il, int ir , int jt, int jb, int rank_l,
          bufSend[j] = U[i][j];
       }
       MPI_Sendrecv(bufSend, jt-jb+2, MPI_DOUBLE, rank_l, 0, bufRecv, jt-jb+2 ,MPI_DOUBLE, rank_r , 0 ,MPI_COMM_WORLD, status);
-
-      i =0;
+      i = ir-il+2;
       for (int j = 0;j<=jt-jb+1;j++)
       {
           U[i][j] = bufRecv[j];
       }
+      
    }
   
 
@@ -266,12 +256,12 @@ void uv_comm(double **U,double **V, int il, int ir , int jt, int jb, int rank_l,
       }
     
       MPI_Sendrecv(bufSend, jt-jb+2, MPI_DOUBLE, rank_r, 0, bufRecv, jt-jb+2 ,MPI_DOUBLE, rank_l , 0 ,MPI_COMM_WORLD, status);
-      
-      i = ir-il+2;
+      i =0;
       for (int j = 0;j<=jt-jb+1;j++)
       {
           U[i][j] = bufRecv[j];
       }
+      
    }
 
 
@@ -284,7 +274,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jt, int jb, int rank_l,
       }
   
       MPI_Sendrecv(bufSend, ir-il+3, MPI_DOUBLE, rank_t, 0, bufRecv, ir-il+3 ,MPI_DOUBLE, rank_b , 0 ,MPI_COMM_WORLD, status);
-      j = jt-jb+1;
+      j = 0;
       for (int i = 0;i<=ir-il+2;i++)
       {
           U[i][j] = bufRecv[i];
@@ -302,15 +292,20 @@ void uv_comm(double **U,double **V, int il, int ir , int jt, int jb, int rank_l,
       }
       
       MPI_Sendrecv(bufSend, ir-il+3, MPI_DOUBLE, rank_b, 0, bufRecv, ir-il+3 ,MPI_DOUBLE, rank_t , 0 ,MPI_COMM_WORLD, status);
-      j = 0;
+      j = jt-jb+1;
       for (int i = 0;i<=ir-il+2;i++)
       {
           U[i][j] = bufRecv[i];
       }
+
    }
 
 
-// communicating the values of V
+    //  Horizontal velocity communication taking place
+    //  1st the current processor sends data to its left neighbour and receives from its right neighbour.
+    //  2nd the current processor sends data to its right neighbour and receives from its left neighbour.
+    //  3rd the current processor sends data to top top neighbour and receives from its bottom neighbour.
+    //  4th the current processor sends data to its bottom neighbour and receives from its top neighbour.
 
    if (rank_l != MPI_PROC_NULL)
    {
@@ -320,12 +315,12 @@ void uv_comm(double **U,double **V, int il, int ir , int jt, int jb, int rank_l,
          bufSend[j] = V[i][j];
       }
       MPI_Sendrecv(bufSend, jt-jb+3, MPI_DOUBLE, rank_l, 0, bufRecv, jt-jb+3 ,MPI_DOUBLE, rank_r, 0 ,MPI_COMM_WORLD, status);
-
-      i =0;
+      i = ir-il+1;
       for (int j = 0;j<=jt-jb+2;j++)
       {
           V[i][j] = bufRecv[j];
       }
+      
    }
 
    if (rank_r != MPI_PROC_NULL)
@@ -337,11 +332,12 @@ void uv_comm(double **U,double **V, int il, int ir , int jt, int jb, int rank_l,
       }
       
       MPI_Sendrecv(bufSend, jt-jb+3, MPI_DOUBLE, rank_r, 0, bufRecv, jt-jb+3 ,MPI_DOUBLE, rank_l  , 0 ,MPI_COMM_WORLD, status);
-      i = ir-il+1;
+      i =0;
       for (int j = 0;j<=jt-jb+2;j++)
       {
           V[i][j] = bufRecv[j];
       }
+
    }
 
    if (rank_t != MPI_PROC_NULL)
@@ -352,7 +348,7 @@ void uv_comm(double **U,double **V, int il, int ir , int jt, int jb, int rank_l,
          bufSend[i] = V[i][j];
       }
       MPI_Sendrecv(bufSend, ir-il+2, MPI_DOUBLE, rank_t, 0, bufRecv, ir-il+2 ,MPI_DOUBLE, rank_b  , 0 ,MPI_COMM_WORLD, status);
-      j = jt-jb+2;
+      j = 0;
       for (int i = 0;i<=ir-il+1;i++)
       {
           V[i][j] = bufRecv[i];
@@ -367,13 +363,12 @@ void uv_comm(double **U,double **V, int il, int ir , int jt, int jb, int rank_l,
          bufSend[i] = V[i][j];
       }
        MPI_Sendrecv(bufSend, ir-il+2, MPI_DOUBLE, rank_b, 0, bufRecv, ir-il+2 ,MPI_DOUBLE, rank_t  , 0 ,MPI_COMM_WORLD, status);
-      j = 0;
+      j = jt-jb+2;
       for (int i = 0;i<=ir-il+1;i++)
       {
           V[i][j] = bufRecv[i];
       }
+      
    }
-   free(bufSend);
-   free(bufRecv);
 }
 

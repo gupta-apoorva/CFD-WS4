@@ -3,14 +3,14 @@
 #include <stdio.h>
 
 
-
+// Function to output the vtk files..
 void output_uvp(double **U,double **V,double **P,int il,int ir,
 int jb,int jt,int omg_i,int omg_j,char *szProblem,int timeStepNumber,int myrank){
 int imax = ir-il;
 int jmax = jt-jb;
 
 int i,j;
-  char szFileName[80];
+  char szFileName[80];             // Giving the proper name to the vtk file.
   FILE *fp=NULL;
   sprintf( szFileName, "%s.%i.%d.vtk", szProblem, timeStepNumber,myrank );
   fp = fopen( szFileName, "w");
@@ -22,8 +22,8 @@ int i,j;
     return;
   }
 
-  write_vtkHeader( fp, imax, jmax);
-  write_vtkPointCoordinates(fp, imax, jmax, il ,  ir,  jt, jb);
+  write_vtkHeader( fp, imax, jmax);                              // Writing the vtk heade
+  write_vtkPointCoordinates(fp, imax, jmax, il ,  ir,  jt, jb);  // Writing the coordinated of points in the vtk file
 
   fprintf(fp,"POINT_DATA %i \n", (imax+1)*(jmax+1) );
 	
@@ -31,7 +31,7 @@ int i,j;
   fprintf(fp, "VECTORS velocity float\n");
   for(j = 0; j < jmax+1; j++) {
     for(i = 0; i < imax+1; i++) {
-      fprintf(fp, "%f %f 0\n", (U[i][j] + U[i][j+1]) * 0.5, (V[i][j] + V[i+1][j]) * 0.5 );
+      fprintf(fp, "%f %f 0\n", (U[i][j] + U[i][j+1]) * 0.5, (V[i][j] + V[i+1][j]) * 0.5 );        // Writing the U and V values in the vtk file 
     }
   }
 
@@ -39,7 +39,7 @@ int i,j;
   fprintf(fp,"CELL_DATA %i \n", ((imax)*(jmax)) );
   fprintf(fp, "SCALARS pressure float 1 \n"); 
   fprintf(fp, "LOOKUP_TABLE default \n");
-  for(j = 1; j < jmax+1; j++) {
+  for(j = 1; j < jmax+1; j++) {                                 // Writing the pressure values in the vtk file
     for(i = 1; i < imax+1; i++) {
       fprintf(fp, "%f\n", P[i][j] );
     }

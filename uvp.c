@@ -45,7 +45,7 @@ if (tau>0)
        }
     }
     
-    *dt = tau*fmin(fmin(dx/umax,dy/vmax),Re/(2*(1/(dx*dx)+1/(dy*dy))));
+    *dt = tau*fmin(fmin(dx/umax,dy/vmax),Re/(2*(1/(dx*dx)+1/(dy*dy))));    // CFL Condition... 
    }
 }
 

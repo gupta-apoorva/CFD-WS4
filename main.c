@@ -125,8 +125,8 @@ int main(int argn, char** args)
         double res_new ;
 
         MPI_Allreduce(&res , &res_new , 1 , MPI_DOUBLE , MPI_SUM , MPI_COMM_WORLD ); 
-
-        res = res_new;
+	res_new = res_new/(imax*jmax);
+	res = sqrt(res_new);
 
         printf("new residual = %f\n", res );
 
@@ -152,7 +152,8 @@ int main(int argn, char** args)
 
 
 
-    write_vtkFile("szProblem.vtk", n , xlength/2.0 , ylength/2.0 , ir - il , jt - jb,dx, dy, U, V, P,il,ir,jt,jb,myrank);
+    //write_vtkFile("szProblem.vtk", n , xlength/2.0 , ylength/2.0 , ir - il , jt - jb,dx, dy, U, V, P,il,ir,jt,jb,myrank);
+    output_uvp(U, V, P, il, ir, jb, jt, omg_i, omg_j,"szProblem1.vtk",n,myrank);
     
     //Freeing all the momory allocated on the processor.
 

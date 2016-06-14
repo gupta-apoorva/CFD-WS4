@@ -110,7 +110,7 @@ int main(int argn, char** args){
       boundary_values(rank_l, rank_r , rank_t , rank_b , il , ir , jt , jb , U , V ,F, G);
     
     // Calculating the F and G matrices  
-      calculate_fg(Re,GX, GY, alpha, dt, dx, dy, ir - il +2 , jt - jb + 2  , U, V, F, G, rank_l, rank_r, rank_t, rank_b );
+      calculate_fg(Re,GX, GY, alpha, dt, dx, dy, ir - il + 2 , jt - jb + 2  , U, V, F, G, rank_l, rank_r, rank_t, rank_b );
 
     // Calculating the right hand side of the pressure poissions equation
       calculate_rs(dt,dx,dy, ir - il  , jt - jb , F , G , RS);
